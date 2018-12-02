@@ -1,0 +1,6 @@
+40AP ALL: *Manuscript (True), *Manuscript (False), Maiden Leading Chaldea, The Merciless One, Scholars of Chaldea, Saber Piece, Lancer Piece, Archer Piece, Caster Piece, Rider Piece, Assassin Piece, Berserker Piece, Saber Monument, Lancer Monument, Archer Monument, Caster Monument, Rider Monument, Assassin Monument, Berserker Monument, Heart of a Foreign God, Void Dust
+40AP Archer: *Manuscript (True), *Manuscript (False), Maiden Leading Chaldea, The Merciless One, Scholars of Chaldea, Archer Monument, Bloodstone Tear, Void Dust, *Mona Lisa, *Vitruvian Man, *Self Portrait
+40AP Saber: *Manuscript (True), *Manuscript (False), Maiden Leading Chaldea, The Merciless One, Scholars of Chaldea, Saber Monument, Spirit Root, Yggdrassil Seed, *Mona Lisa
+40AP Assassin: *Manuscript (True), *Manuscript (False), Maiden Leading Chaldea, The Merciless One, Scholars of Chaldea, Assassin Monument, Ghost Lantern, Black Beast Grease, *Self Portrait
+40AP Caster: *Manuscript (True), *Manuscript (False), Maiden Leading Chaldea, The Merciless One, Scholars of Chaldea, Caster Monument, Forbidden Page, Heart of a Foreign God, *Mona Lisa
+40AP Lancer: *Manuscript (True), *Manuscript (False), Maiden Leading Chaldea, The Merciless One, Scholars of Chaldea, Lancer Monument, Bicorn Horn, Undead Bone, *Vitruvian Man
