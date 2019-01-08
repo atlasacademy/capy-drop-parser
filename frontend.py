@@ -7,7 +7,8 @@ import json
 import logging
 import imghdr
 import time
-import uuid
+import os
+import errno
 
 import fgo_mat_counter
 
@@ -35,7 +36,13 @@ def check_dirs_for_new_images(dir_list):
     for dir in dir_list:
         for f in pathlib.Path(dir).iterdir():
             if f.is_file() and imghdr.what(f) is not None:
-                new_path = SCRIPT_BASE_PATH / 'output' / f.parts[-2] / (str(uuid.uuid4()) + f.suffix)
+                new_path = SCRIPT_BASE_PATH / 'output' / f.parts[-2] / f.name
+                if not os.path.exists(new_path.parent):
+                    try:
+                        os.makedirs(new_path.parent)
+                    except OSError as e:
+                        if e.errno != errno.EEXIST:
+                            raise
                 f.replace(new_path)
                 work_items.append(new_path)
 
@@ -105,7 +112,6 @@ if __name__ == '__main__':
             process_pool.apply_async(fgo_mat_counter.analyze_image_for_discord,
                                      [wi, settings, SCRIPT_BASE_PATH / 'input'/ wi.parts[-2] / 'files'],
                                      {}, handle_success, handle_failure)
-            # handle_success(fgo_mat_counter.analyze_image_for_discord(wi, settings, SCRIPT_BASE_PATH / 'input'/ wi.parts[-2] / 'files'))
 
         time.sleep(int(args.polling_frequency))
 
