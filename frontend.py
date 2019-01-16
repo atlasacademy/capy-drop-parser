@@ -9,6 +9,7 @@ import imghdr
 import time
 import os
 import errno
+import shutil
 
 import fgo_mat_counter
 
@@ -43,7 +44,8 @@ def check_dirs_for_new_images(dir_list):
                     except OSError as e:
                         if e.errno != errno.EEXIST:
                             raise
-                f.replace(new_path)
+                shutil.copy2(f, new_path)
+                os.remove(f)
                 work_items.append(new_path)
 
     return work_items
@@ -52,7 +54,6 @@ def normalize_drop_locations(drops):
     y_locations = []
     for drop in drops:
         y_locations.append(drop['y'])
-
     y_locations.sort()
     for drop in drops:
         drop['y'] = int(y_locations.index(drop['y']) / 7)
