@@ -19,7 +19,8 @@ SCRIPT_BASE_PATH = pathlib.Path(sys.argv[0]).parent
 def signal_handling(signum,frame):
     global TERMINATE
     TERMINATE = True
-    print(f'Notice: app may take up to polling frequency time before exting.')
+    print(f'Notice: app may take up to polling frequency time and however long it takes to finish the queue before exting.')
+
 
 signal.signal(signal.SIGINT,signal_handling)
 
@@ -85,8 +86,9 @@ def create_result_json_file(result):
 
 
 def handle_success(result):
-    result['drops'] = normalize_drop_locations(result['drops'])
-    result['drops'] = convert_score_to_float_for_json(result['drops'])
+    if result['matched'] == True:
+        result['drops'] = normalize_drop_locations(result['drops'])
+        result['drops'] = convert_score_to_float_for_json(result['drops'])
     create_result_json_file(result)
 
 
@@ -103,6 +105,7 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(relativeCreated)6d %(threadName)s %(message)s', level=logging.ERROR,
                         filename='logfile.log',
                         filemode='w')
+    logging.getLogger('').addHandler(logging.StreamHandler())
 
     node_directory_list = get_node_directories()
     process_pool = multiprocessing.Pool(processes=int(args.num_processes))
