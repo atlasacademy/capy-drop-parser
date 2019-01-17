@@ -7,7 +7,7 @@ import fgo_mat_counter
 
 
 DEBUG = False
-LABEL = False
+LABEL = True
 
 def remove_scores(dictionary):
     for drop in dictionary['drops']:
@@ -232,6 +232,18 @@ class TestSpecialCases(unittest.TestCase):
         test_image = os.path.join(os.getcwd(), 'test_data', 'black_and_blue_border.jpg')
         self.assertEqual(remove_scores(remove_qp_drops(remove_location(remove_scroll_position(expected)))),
                          remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
+
+
+class TestScrollBarLocation(unittest.TestCase):
+    def test_scroll_at_top(self):
+        test_image = os.path.join(os.getcwd(), 'test_data', 'da_vinci.png')
+        res = fgo_mat_counter.run(test_image, DEBUG, LABEL)
+        self.assertNotEquals(-1, res['scroll_position'])
+
+    def test_scroll_at_top2(self):
+        test_image = os.path.join(os.getcwd(), 'test_data', 'Screenshot_20181205-153908_Fate_GO.jpg')
+        res = fgo_mat_counter.run(test_image, DEBUG, LABEL)
+        self.assertNotEquals(-1, res['scroll_position'])
 
 
 class TestFrontend(unittest.TestCase):

@@ -260,12 +260,13 @@ def get_qp(image):
 
 
 def get_scroll_bar_start_height(image):
-    gray_image = cv2.cvtColor(image[98:98 + 336, 927:927 + 17], cv2.COLOR_BGR2GRAY)
+    gray_image = cv2.cvtColor(image[98:98 + 330, 920:920 + 27], cv2.COLOR_BGR2GRAY)
     _, binary = cv2.threshold(gray_image, 225, 255, cv2.THRESH_BINARY)
+    if (LABEL): cv2.imwrite('scroll_bar_binary.png', binary)
     _, template = cv2.threshold(cv2.imread(os.path.join(REFFOLDER, 'scroll_bar_upper.png'), cv2.IMREAD_GRAYSCALE), 225, 255, cv2.THRESH_BINARY)
     res = cv2.matchTemplate(binary, template, cv2.TM_CCOEFF_NORMED)
     _, maxValue, _, max_loc = cv2.minMaxLoc(res)
-    return max_loc if maxValue > THRESHOLD else -1
+    return max_loc[1] if maxValue > 0.5 else -1
 
 
 def get_aspect_ratio(image):
