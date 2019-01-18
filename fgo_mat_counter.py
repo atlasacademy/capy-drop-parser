@@ -235,20 +235,19 @@ def get_qp_from_text(text):
 
     return qp
 
-def extract_text_from_image(image):
-    config = ('-l eng --oem 1 --psm 3')
+def extract_text_from_image(image, file_name='pytesseract_input.png'):
     gray =  cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, qp_image = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY_INV)
+    _, qp_image = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY_INV)
 
     if (LABEL):
-        cv2.imwrite('qp_text.png', qp_image)
+        cv2.imwrite(file_name, qp_image)
 
-    return pytesseract.image_to_string(qp_image, config=config)
+    return pytesseract.image_to_string(qp_image, config='-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=,0123456789')
 
 def get_qp(image):
-    qp_gained_text = extract_text_from_image(image[435:430 + 47, 348:348 + 311])
+    qp_gained_text = extract_text_from_image(image[435:430 + 47, 348:348 + 311], 'qp_gained_text.png')
     logging.debug(f'QP gained text: {qp_gained_text}')
-    qp_total_text = extract_text_from_image(image[481:481 + 38, 212:212 + 282])
+    qp_total_text = extract_text_from_image(image[481:481 + 38, 212:212 + 282], 'qp_total_text.png')
     logging.debug(f'QP total text: {qp_total_text}')
     qp_gained = get_qp_from_text(qp_gained_text)
     qp_total = get_qp_from_text(qp_total_text)
@@ -262,7 +261,7 @@ def get_qp(image):
 def get_scroll_bar_start_height(image):
     gray_image = cv2.cvtColor(image[98:98 + 330, 920:920 + 27], cv2.COLOR_BGR2GRAY)
     _, binary = cv2.threshold(gray_image, 225, 255, cv2.THRESH_BINARY)
-    if (LABEL): cv2.imwrite('scroll_bar_binary.png', binary)
+    if LABEL: cv2.imwrite('scroll_bar_binary.png', binary)
     _, template = cv2.threshold(cv2.imread(os.path.join(REFFOLDER, 'scroll_bar_upper.png'), cv2.IMREAD_GRAYSCALE), 225, 255, cv2.THRESH_BINARY)
     res = cv2.matchTemplate(binary, template, cv2.TM_CCOEFF_NORMED)
     _, maxValue, _, max_loc = cv2.minMaxLoc(res)
@@ -272,6 +271,12 @@ def get_scroll_bar_start_height(image):
 def get_aspect_ratio(image):
     height, width, _ = image.shape
     return float(width) / height
+
+def get_drop_count(image):
+    try:
+        return int(extract_text_from_image(image[0:0 + 35, 806:806 + 50], 'drop_count_text.png'))
+    except:
+        return -1
 
 def analyze_image(image_path, templates, LABEL=False):
     #read target image
@@ -321,7 +326,8 @@ def analyze_image(image_path, templates, LABEL=False):
     mat_drops = countMats(targetImg, templates)
     qp_gained, qp_total = get_qp(targetImg)
     scroll_position = get_scroll_bar_start_height(targetImg)
-    return { "qp_gained": qp_gained, "qp_total": qp_total, 'scroll_position': scroll_position, "drops": mat_drops }
+    drop_count = get_drop_count(targetImg)
+    return { "qp_gained": qp_gained, "qp_total": qp_total, 'scroll_position': scroll_position, "drop_count": drop_count, "drops": mat_drops }
 
 def load_image(image_path):
     if not os.path.isfile(image_path):

@@ -54,23 +54,9 @@ def check_dirs_for_new_images(dir_list):
     return work_items
 
 def normalize_drop_locations(drops):
-    y_locations = []
     for drop in drops:
-        y_locations.append(drop['y'])
-    y_locations.sort()
-    for drop in drops:
-        drop['y'] = int(y_locations.index(drop['y']) / 7)
-
-    num_rows = int((len(y_locations) / 7) + 1)
-    for row in range(0, num_rows):
-        x_locations = []
-        row_drops = list(filter(lambda drop: drop['y'] == row, drops))
-        for drop in row_drops:
-            x_locations.append(drop['x'])
-
-        x_locations.sort()
-        for drop in row_drops:
-            drop['x'] = int(x_locations.index(drop['x']) % 7)
+        drop['y'] = int(drop['y'] / 100)
+        drop['x'] = int(drop['x'] / 100)
 
     return drops
 

@@ -1,6 +1,5 @@
 import unittest
 import os
-import tempfile
 
 import frontend
 import fgo_mat_counter
@@ -38,7 +37,7 @@ def remove_scroll_position(dictionary):
 
 class TestEvents(unittest.TestCase):
     def test_da_vinci(self):
-        expected = {'qp_gained': 9400, 'qp_total': 357256131, 'drops': [
+        expected = {'qp_gained': 9400, 'qp_total': 357256131, 'drop_count': 15, 'drops': [
             {'id': 'Manuscript (True).png', 'x': 352, 'y': 7, 'score': '0.91605514', 'stack': 3},
             {'id': 'Manuscript (True).png', 'x': 463, 'y': 7, 'score': '0.91864091', 'stack': 3},
             {'id': 'Manuscript (True).png', 'x': 575, 'y': 7, 'score': '0.90524661', 'stack': 3},
@@ -60,7 +59,7 @@ class TestEvents(unittest.TestCase):
         self.assertEqual(remove_scores(remove_qp_drops(remove_location(remove_scroll_position(expected)))), remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
 
     def test_christmas_2018(self):
-        expected = {'qp_gained': 6400, 'qp_total': 324783641, 'drops': [
+        expected = {'qp_gained': 6400, 'qp_total': 324783641, 'drop_count': 12, 'drops': [
             {'id': 'christmas_2018_stocking.png', 'x': 350, 'y': 8, 'score': 1.0, 'stack': 2},
             {'id': 'christmas_2018_gold_currency.png', 'x': 462, 'y': 8, 'score': 1.0, 'stack': 2},
             {'id': 'christmas_2018_gold_currency.png', 'x': 685, 'y': 8, 'score': 0.9913225, 'stack': 3},
@@ -79,9 +78,9 @@ class TestEvents(unittest.TestCase):
                          remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
 
     @unittest.skipUnless(os.path.isdir(os.path.join(os.getcwd(), 'test_data', 'xmas_2018_expert_revo')), 'requries test data for 2018 christmas expert node')
-    def test_christmas_2018_expoert_revo(self):
+    def test_christmas_2018_expert_revo(self):
         expected = \
-        {'01-6vBzFzW.png': {'qp_gained': 6400, 'qp_total': 324662697, 'drops': [
+        {'01-6vBzFzW.png': {'qp_gained': 6400, 'qp_total': 324662697, 'drop_count': 15, 'drops': [
             {'id': 'Shining Gem of Rider.png', 'x': 350, 'y': 4, 'score': 0.98451334},
             {'id': 'christmas_2018_stocking.png', 'x': 461, 'y': 5, 'score': 0.9804248, 'stack': 2},
             {'id': 'christmas_2018_stocking.png', 'x': 572, 'y': 5, 'score': 0.9865965, 'stack': 2},
@@ -97,7 +96,7 @@ class TestEvents(unittest.TestCase):
             {'id': 'christmas_2018_silver_currency.png', 'x': 685, 'y': 120, 'score': 0.9978055, 'stack': 3},
             {'id': 'christmas_2018_silver_currency.png', 'x': 16, 'y': 235, 'score': 0.9817206, 'stack': 3},
             {'id': 'christmas_2018_silver_currency.png', 'x': 128, 'y': 235, 'score': 0.99912834, 'stack': 3}]},
-        '01-bmlzv6z.png': {'qp_gained': 6400, 'qp_total': 324783641, 'drops': [
+        '01-bmlzv6z.png': {'qp_gained': 6400, 'qp_total': 324783641, 'drop_count': 12, 'drops': [
             {'id': 'christmas_2018_stocking.png', 'x': 350, 'y': 8, 'score': 1.0, 'stack': 2},
             {'id': 'christmas_2018_gold_currency.png', 'x': 462, 'y': 8, 'score': 1.0, 'stack': 2},
             {'id': 'christmas_2018_gold_currency.png', 'x': 685, 'y': 8, 'score': 0.9913225, 'stack': 3},
@@ -110,7 +109,7 @@ class TestEvents(unittest.TestCase):
             {'id': 'Caster Monument.png', 'x': 241, 'y': 9, 'score': 0.931241},
             {'id': 'christmas_2018_silver_currency.png', 'x': 17, 'y': 123, 'score': 0.9825888, 'stack': 2},
             {'id': 'christmas_2018_silver_currency.png', 'x': 128, 'y': 123, 'score': 0.99999964, 'stack': 2}]},
-        '01-GxW18aS.png': {'qp_gained': 6400, 'qp_total': 322856241, 'drops': [
+        '01-GxW18aS.png': {'qp_gained': 6400, 'qp_total': 322856241, 'drop_count': 15, 'drops': [
             {'id': 'christmas_2018_stocking.png', 'x': 238, 'y': 8, 'score': 0.96391135, 'stack': 3},
             {'id': 'christmas_2018_stocking.png', 'x': 350, 'y': 8, 'score': 0.999998, 'stack': 2},
             {'id': 'christmas_2018_gold_currency.png', 'x': 462, 'y': 8, 'score': 0.9999991, 'stack': 2},
@@ -126,7 +125,7 @@ class TestEvents(unittest.TestCase):
             {'id': 'Caster Monument.png', 'x': 129, 'y': 9, 'score': 0.9196835},
             {'id': 'christmas_2018_silver_currency.png', 'x': 239, 'y': 123, 'score': 0.981111, 'stack': 2},
             {'id': 'christmas_2018_silver_currency.png', 'x': 351, 'y': 123, 'score': 0.99220085, 'stack': 3}]},
-        '01-hFeQVAp.png': {'qp_gained': 6400, 'qp_total': 322693641, 'drops': [
+        '01-hFeQVAp.png': {'qp_gained': 6400, 'qp_total': 322693641, 'drop_count': 12, 'drops': [
             {'id': 'christmas_2018_stocking.png', 'x': 127, 'y': 8, 'score': 0.9917377, 'stack': 2},
             {'id': 'christmas_2018_gold_currency.png', 'x': 239, 'y': 8, 'score': 0.9897186, 'stack': 2},
             {'id': 'christmas_2018_gold_currency.png', 'x': 351, 'y': 8, 'score': 0.9804832, 'stack': 2},
@@ -139,7 +138,7 @@ class TestEvents(unittest.TestCase):
             {'id': 'christmas_2018_silver_currency.png', 'x': 128, 'y': 123, 'score': 0.99998873, 'stack': 3},
             {'id': 'christmas_2018_silver_currency.png', 'x': 239, 'y': 123, 'score': 0.98107976, 'stack': 3},
             {'id': 'christmas_2018_silver_currency.png', 'x': 351, 'y': 123, 'score': 0.9922004, 'stack': 3}]},
-        '02-FD22Kwk.png': {'qp_gained': 6400, 'qp_total': 324669097, 'drops': [
+        '02-FD22Kwk.png': {'qp_gained': 6400, 'qp_total': 324669097, 'drop_count': 12, 'drops': [
             {'id': 'Shining Gem of Rider.png', 'x': 239, 'y': 7, 'score': 0.98786265},
             {'id': 'christmas_2018_stocking.png', 'x': 350, 'y': 8, 'score': 0.99999756, 'stack': 2},
             {'id': 'christmas_2018_gold_currency.png', 'x': 462, 'y': 8, 'score': 0.99999744, 'stack': 2},
@@ -152,7 +151,7 @@ class TestEvents(unittest.TestCase):
             {'id': 'christmas_2018_silver_currency.png', 'x': 128, 'y': 123, 'score': 0.9999915, 'stack': 3},
             {'id': 'christmas_2018_silver_currency.png', 'x': 239, 'y': 123, 'score': 0.9810531, 'stack': 3},
             {'id': 'christmas_2018_silver_currency.png', 'x': 351, 'y': 123, 'score': 0.99220395, 'stack': 3}]},
-        '02-GiOatR2.png': {'qp_gained': 6400, 'qp_total': 324790041, 'drops': [
+        '02-GiOatR2.png': {'qp_gained': 6400, 'qp_total': 324790041, 'drop_count': 17, 'drops': [
             {'id': 'Magic Gem of Berserker.png', 'x': 351, 'y': 9, 'score': 0.94785154},
             {'id': 'christmas_2018_stocking.png', 'x': 461, 'y': 8, 'score': 0.98070735, 'stack': 2},
             {'id': 'christmas_2018_gold_currency.png', 'x': 685, 'y': 8, 'score': 0.99131703, 'stack': 2},
@@ -170,7 +169,7 @@ class TestEvents(unittest.TestCase):
             {'id': 'christmas_2018_silver_currency.png', 'x': 351, 'y': 123, 'score': 0.99232167, 'stack': 2},
             {'id': 'christmas_2018_silver_currency.png', 'x': 462, 'y': 123, 'score': 0.9976974, 'stack': 2},
             {'id': 'christmas_2018_silver_currency.png', 'x': 573, 'y': 123, 'score': 0.9707756, 'stack': 3}]},
-        '02-tLmaw1B.png': {'qp_gained': 6400, 'qp_total': 322700041, 'drops': [
+        '02-tLmaw1B.png': {'qp_gained': 6400, 'qp_total': 322700041, 'drop_count': 13, 'drops': [
             {'id': 'christmas_2018_stocking.png', 'x': 127, 'y': 8, 'score': 0.9917398, 'stack': 2},
             {'id': 'christmas_2018_stocking.png', 'x': 238, 'y': 8, 'score': 0.9638939, 'stack': 2},
             {'id': 'christmas_2018_gold_currency.png', 'x': 351, 'y': 8, 'score': 0.9804904, 'stack': 3},
@@ -184,7 +183,7 @@ class TestEvents(unittest.TestCase):
             {'id': 'christmas_2018_silver_currency.png', 'x': 17, 'y': 123, 'score': 0.9825792, 'stack': 3},
             {'id': 'christmas_2018_silver_currency.png', 'x': 128, 'y': 123, 'score': 0.9999912, 'stack': 3},
             {'id': 'christmas_2018_silver_currency.png', 'x': 239, 'y': 123, 'score': 0.981092, 'stack': 3}]},
-        '02-YlcWZiO.png': {'qp_gained': 6400, 'qp_total': 322862641, 'drops': [
+        '02-YlcWZiO.png': {'qp_gained': 6400, 'qp_total': 322862641, 'drop_count': 19, 'drops': [
             {'id': 'christmas_2018_stocking.png', 'x': 461, 'y': 8, 'score': 0.9806902, 'stack': 3},
             {'id': 'christmas_2018_stocking.png', 'x': 572, 'y': 8, 'score': 0.98701394, 'stack': 2},
             {'id': 'christmas_2018_stocking.png', 'x': 684, 'y': 8, 'score': 0.99688655, 'stack': 2},
@@ -214,7 +213,7 @@ class TestEvents(unittest.TestCase):
 
 class TestSpecialCases(unittest.TestCase):
     def test_red_filter(self):
-        expected = {'qp_gained': 2288900, 'qp_total': 106845904, 'drops': [
+        expected = {'qp_gained': 2288900, 'qp_total': 106845904, 'drop_count': 8, 'drops': [
             {'id': 'Shining Gem of Saber.png', 'x': 350, 'y': 5, 'score': '0.97447186'},
             {'id': 'Bloodstone Tear.png', 'x': 129, 'y': 7, 'score': '0.92565679'},
             {'id': 'Void Dust.png', 'x': 239, 'y': 6, 'score': '0.97221052'}]}
@@ -224,7 +223,7 @@ class TestSpecialCases(unittest.TestCase):
                          remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
 
     def test_blue_and_black_borders(self):
-        expected = {'qp_gained': 668900, 'qp_total': 755521417, 'drops': [
+        expected = {'qp_gained': 668900, 'qp_total': 755521417, 'drop_count': 6, 'drops': [
             {'id': 'Shining Gem of Assassin.png', 'x': 350, 'y': 7, 'score': '0.97608447'},
             {'id': 'Magic Gem of Assassin.png', 'x': 240, 'y': 8, 'score': '0.95031976'},
             {'id': 'Homunculus Baby.png', 'x': 128, 'y': 9, 'score': '0.94004923'}]}
@@ -238,12 +237,17 @@ class TestScrollBarLocation(unittest.TestCase):
     def test_scroll_at_top(self):
         test_image = os.path.join(os.getcwd(), 'test_data', 'da_vinci.png')
         res = fgo_mat_counter.run(test_image, DEBUG, LABEL)
-        self.assertNotEquals(-1, res['scroll_position'])
+        self.assertNotEqual(-1, res['scroll_position'])
 
     def test_scroll_at_top2(self):
         test_image = os.path.join(os.getcwd(), 'test_data', 'Screenshot_20181205-153908_Fate_GO.jpg')
         res = fgo_mat_counter.run(test_image, DEBUG, LABEL)
-        self.assertNotEquals(-1, res['scroll_position'])
+        self.assertNotEqual(-1, res['scroll_position'])
+
+    def test_no_scroll_bar(self):
+        test_image = os.path.join(os.getcwd(), 'test_data', 'black_and_blue_border.jpg')
+        res = fgo_mat_counter.run(test_image, DEBUG, LABEL)
+        self.assertEqual(-1, res['scroll_position'])
 
 
 class TestFrontend(unittest.TestCase):
@@ -254,9 +258,9 @@ class TestFrontend(unittest.TestCase):
             {'id': 'Void Dust.png', 'x': 239, 'y': 6, 'score': '0.97221052'}]
 
         expected = [
-            {'id': 'Shining Gem of Saber.png', 'x': 2, 'y': 0, 'score': '0.97447186'},
-            {'id': 'Bloodstone Tear.png', 'x': 0, 'y': 0, 'score': '0.92565679'},
-            {'id': 'Void Dust.png', 'x': 1, 'y': 0, 'score': '0.97221052'}]
+            {'id': 'Shining Gem of Saber.png', 'x': 3, 'y': 0, 'score': '0.97447186'},
+            {'id': 'Bloodstone Tear.png', 'x': 1, 'y': 0, 'score': '0.92565679'},
+            {'id': 'Void Dust.png', 'x': 2, 'y': 0, 'score': '0.97221052'}]
 
         self.assertEqual(expected, frontend.normalize_drop_locations(input_data))
 
