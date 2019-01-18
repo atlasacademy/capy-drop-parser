@@ -340,13 +340,12 @@ def load_template_images(settings, template_dir):
     return settings
 
 def analyze_image_for_discord(image_path, settings, template_dir):
-    settings = load_template_images(settings, template_dir)
-
     try:
+        settings = load_template_images(settings, template_dir)
         result = analyze_image(image_path, settings, False)
         result['matched'] = True
-    except:
-        result = { 'matched': False }
+    except Exception as e:
+        result = { 'matched': False, 'exception': e }
 
     result['image_path'] = str(image_path)
     return result

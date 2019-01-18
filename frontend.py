@@ -18,6 +18,8 @@ SCRIPT_BASE_PATH = pathlib.Path(sys.argv[0]).parent
 
 def signal_handling(signum,frame):
     global TERMINATE
+    if TERMINATE == True:
+        sys.exit(1)
     TERMINATE = True
     print(f'Notice: app may take up to polling frequency time and however long it takes to finish the queue before exting.')
 
@@ -89,6 +91,9 @@ def handle_success(result):
     if result['matched'] == True:
         result['drops'] = normalize_drop_locations(result['drops'])
         result['drops'] = convert_score_to_float_for_json(result['drops'])
+    else:
+        logging.error(f'analysis failed: {result}')
+        result.pop('exception')
     create_result_json_file(result)
 
 
