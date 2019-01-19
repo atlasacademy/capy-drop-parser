@@ -1,0 +1,446 @@
+[
+  {
+    "id": "Berserker Monument.png",
+    "type": "material"
+  },
+  {
+    "id": "Shining Gem of Lancer.png",
+    "type": "material"
+  },
+  {
+    "id": "Magic Gem of Assassin.png",
+    "type": "material"
+  },
+  {
+    "id": "Assassin Monument.png",
+    "type": "material"
+  },
+  {
+    "id": "Manuscript (True).png",
+    "type": "currency"
+  },
+  {
+    "id": "christmas_2018_stocking.png",
+    "type": "currency"
+  },
+  {
+    "id": "christmas_2018_gold_currency.png",
+    "type": "currency"
+  },
+  {
+    "id": "Bloodstone Tear.png",
+    "type": "material"
+  },
+  {
+    "id": "Rider Monument.png",
+    "type": "material"
+  },
+  {
+    "id": "Shining Gem of Rider.png",
+    "type": "material"
+  },
+  {
+    "id": "Bicorn Horn.png",
+    "type": "material"
+  },
+  {
+    "id": "Saber Monument.png",
+    "type": "material"
+  },
+  {
+    "id": "Eternal Gear.png",
+    "type": "material"
+  },
+  {
+    "id": "Self Portrait.png",
+    "type": "currency"
+  },
+  {
+    "id": "Secret Gem of Assassin.png",
+    "type": "material"
+  },
+  {
+    "id": "Lancer Monument.png",
+    "type": "material"
+  },
+  {
+    "id": "Hero's Proof.png",
+    "type": "material"
+  },
+  {
+    "id": "Dragons Reverse Scale.png",
+    "type": "material"
+  },
+  {
+    "id": "Shining Gem of Berserker.png",
+    "type": "material"
+  },
+  {
+    "id": "Magic Gem of Berserker.png",
+    "type": "material"
+  },
+  {
+    "id": "Manuscript (False).png",
+    "type": "currency"
+  },
+  {
+    "id": "Magic Gem of Saber.png",
+    "type": "material"
+  },
+  {
+    "id": "Magic Gem of Caster.png",
+    "type": "material"
+  },
+  {
+    "id": "Archer Piece.png",
+    "type": "material"
+  },
+  {
+    "id": "Serpent Eye Jewel.png",
+    "type": "material"
+  },
+  {
+    "id": "Octuplet Twin Crystals.png",
+    "type": "material"
+  },
+  {
+    "id": "Magic Gem of Archer.png",
+    "type": "material"
+  },
+  {
+    "id": "Dragon Fang.png",
+    "type": "material"
+  },
+  {
+    "id": "qp.png",
+    "type": "material"
+  },
+  {
+    "id": "christmas_2018_bronze_currency.png",
+    "type": "currency"
+  },
+  {
+    "id": "Archer Monument.png",
+    "type": "material"
+  },
+  {
+    "id": "Undead Bone.png",
+    "type": "material"
+  },
+  {
+    "id": "Meteor Horseshoe.png",
+    "type": "material"
+  },
+  {
+    "id": "Scholars of Chaldea.png",
+    "type": "material"
+  },
+  {
+    "id": "Secret Gem of Saber.png",
+    "type": "material"
+  },
+  {
+    "id": "The Merciless One.png",
+    "type": "material"
+  },
+  {
+    "id": "Yggdrassil Seed.png",
+    "type": "material"
+  },
+  {
+    "id": "Magic Gem of Rider.png",
+    "type": "material"
+  },
+  {
+    "id": "Secret Gem of Berserker.png",
+    "type": "material"
+  },
+  {
+    "id": "Fang_test.png",
+    "type": "material"
+  },
+  {
+    "id": "Assassin Piece.png",
+    "type": "material"
+  },
+  {
+    "id": "Phoenix Plume.png",
+    "type": "material"
+  },
+  {
+    "id": "Secret Gem of Archer.png",
+    "type": "material"
+  },
+  {
+    "id": "Mona Lisa.png",
+    "type": "currency"
+  },
+  {
+    "id": "Lancer Piece.png",
+    "type": "material"
+  },
+  {
+    "id": "Ghost Lantern.png",
+    "type": "material"
+  },
+  {
+    "id": "Talon of Chaos.png",
+    "type": "material"
+  },
+  {
+    "id": "Berserker Piece.png",
+    "type": "material"
+  },
+  {
+    "id": "Secret Gem of Caster.png",
+    "type": "material"
+  },
+  {
+    "id": "Saber Piece.png",
+    "type": "material"
+  },
+  {
+    "id": "Black Beast Grease.png",
+    "type": "material"
+  },
+  {
+    "id": "Secret Gem of Rider.png",
+    "type": "material"
+  },
+  {
+    "id": "Void Dust.png",
+    "type": "material"
+  },
+  {
+    "id": "Shining Gem of Assassin.png",
+    "type": "material"
+  },
+  {
+    "id": "Caster Monument.png",
+    "type": "material"
+  },
+  {
+    "id": "christmas_2018_silver_currency.png",
+    "type": "currency"
+  },
+  {
+    "id": "Secret Gem of Lancer.png",
+    "type": "material"
+  },
+  {
+    "id": "Shining Gem of Archer.png",
+    "type": "material"
+  },
+  {
+    "id": "Caster Piece.png",
+    "type": "material"
+  },
+  {
+    "id": "Shining Gem of Saber.png",
+    "type": "material"
+  },
+  {
+    "id": "Homunculus Baby.png",
+    "type": "material"
+  },
+  {
+    "id": "Magic Gem of Lancer.png",
+    "type": "material"
+  },
+  {
+    "id": "Shining Gem of Caster.png",
+    "type": "material"
+  },
+  {
+    "id": "Maiden Leading Chaldea.png",
+    "type": "material"
+  },
+  {
+    "id": "Heart of a Foreign God.png",
+    "type": "material"
+  },
+  {
+    "id": "Forbidden Page.png",
+    "type": "material"
+  },
+  {
+    "id": "Vitruvian Man.png",
+    "type": "currency"
+  },
+  {
+    "id": "Rider Piece.png",
+    "type": "material"
+  },
+  {
+    "id": "Spirit Root.png",
+    "type": "material"
+  },
+  {
+    "id": "char_(_s_g_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_(_g_g_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_7_s_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_2_g_w_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_9_b_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_x_s_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_3_s_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_1_s_g_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_8_s_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_(_g_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_1_s_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_1_g_w_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_(_s_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_5_b_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_x_b_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_+_g_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_0_s_w_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_(_b_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_7_s_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_8_s_w_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_x_g_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_1_g_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_4_s_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_1_s_w_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_2_s_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_6_s_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_7_g_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_1_s_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_+_s_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_7_s_w_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_2_g_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_9_s_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_4_b_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_2_s_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_5_b_w_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_0_s_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_3_g_w_2.png",
+    "type": "character"
+  },
+  {
+    "id": "char_3_g_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_5_s_w.png",
+    "type": "character"
+  },
+  {
+    "id": "char_4_s_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_0_s_g.png",
+    "type": "character"
+  },
+  {
+    "id": "char_5_b_w.png",
+    "type": "character"
+  }
+]

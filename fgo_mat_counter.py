@@ -349,6 +349,10 @@ def load_template_images(settings, template_dir):
 def analyze_image_for_discord(image_path, settings, template_dir):
     try:
         settings = load_template_images(settings, template_dir)
+        with open(pathlib.Path(sys.argv[0]).parent / 'ref' / 'characters.json') as fp:
+            characters = json.load(fp)
+            characters = load_template_images(characters, pathlib.Path(sys.argv[0]).parent / 'ref')
+            settings.extend(characters)
         result = analyze_image(image_path, settings, False)
         result['matched'] = True
     except Exception as e:
