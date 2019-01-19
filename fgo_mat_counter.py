@@ -32,7 +32,6 @@ CHAR_THRESHOLD = .65
 CHAR_THRESHOLD_LOOSE = .59
 
 REFFOLDER = pathlib.Path(sys.argv[0]).parent / 'ref'
-TARGETFOLDER = pathlib.Path(sys.argv[0]).parent / "nodes"
 
 OFFSET_HEIGHT = 75
 OFFSET_WIDTH = 13
@@ -349,9 +348,9 @@ def load_template_images(settings, template_dir):
 def analyze_image_for_discord(image_path, settings, template_dir):
     try:
         settings = load_template_images(settings, template_dir)
-        with open(pathlib.Path(sys.argv[0]).parent / 'ref' / 'characters.json') as fp:
+        with open(REFFOLDER / 'characters.json') as fp:
             characters = json.load(fp)
-            characters = load_template_images(characters, pathlib.Path(sys.argv[0]).parent / 'ref')
+            characters = load_template_images(characters, REFFOLDER)
             settings.extend(characters)
         result = analyze_image(image_path, settings, False)
         result['matched'] = True
