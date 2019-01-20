@@ -274,7 +274,7 @@ def get_aspect_ratio(image):
 def get_drop_count(image):
     try:
         text = extract_text_from_image(image[0:0 + 35, 806:806 + 40], 'drop_count_text.png')
-        return int(re.search("([0-9])+", text).group(1))
+        return int(re.search("([0-9]+)", text).group(1))
     except:
         return -1
 
