@@ -5,4 +5,5 @@ if [ "$RUN_SERVICE" = false ] ; then
   exit
 fi
 
+echo Running parser ...
 python3 /app/frontend.py -j $WORKERS -p $SLEEP
