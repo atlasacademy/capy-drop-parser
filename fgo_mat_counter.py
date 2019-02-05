@@ -146,12 +146,14 @@ def get_stack_sizes(image, mat_drops, templates):
     currencies = list(filter(lambda template: template['type'] == 'currency', templates))
     character_templates = list(filter(lambda template: template['type'] == 'character', templates))
     for drop in mat_drops:
+        drop['stack'] = 0
         for currency in currencies:
             if drop['id'] == currency['id']:
-                stack_size_string = getCharactersFromImage(image[drop['y']+74:drop['y']+mat_height-8, drop['x']:drop['x']+mat_width], character_templates, CHAR_THRESHOLD)
+                character_image = image[drop['y']+60:drop['y']+mat_height-20, drop['x']:drop['x']+mat_width]
+                stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD)
                 if (not checkValueString(stack_size_string)):
                     logging.warning(f"failed to get stack count for {drop}, retrying with lower threshold")
-                    stack_size_string = getCharactersFromImage(image[drop['y']+74:drop['y']+mat_height-8, drop['x']:drop['x']+mat_width], character_templates, CHAR_THRESHOLD_LOOSE)
+                    stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD_LOOSE)
 
                 logging.debug(f'raw string from character metching: {stack_size_string}')
                 drop['stack'] = get_stack_base(stack_size_string)
@@ -380,6 +382,10 @@ def run(image, debug=False, label=False):
 
     with open(REFFOLDER / 'settings.json') as fp: settings = json.load(fp)
     settings = load_template_images(settings, REFFOLDER)
+    with open(REFFOLDER / 'characters.json') as fp:
+        characters = json.load(fp)
+        characters = load_template_images(characters, REFFOLDER)
+        settings.extend(characters)
 
 
     print("Running...")
@@ -406,3 +412,10 @@ if __name__ ==  '__main__':
 
     results = run(args.image, args.debug, args.label)
     print(results)
+    # with open(REFFOLDER / 'settings.json') as fp:
+    #     settings = json.load(fp)
+    # settings = load_template_images(settings, REFFOLDER)
+    # for template in settings:
+    #     if template['type'] == 'currency' or template['type'] == 'material':
+    #         h, w, _ = template['image'].shape
+    #         cv2.imwrite(str((REFFOLDER / f'{template["id"]}')), template['image'][15:h, 0:w])
