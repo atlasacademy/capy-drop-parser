@@ -29,7 +29,7 @@ MIN_DISTANCE = 50
 DIGIT_MIN_DISTANCE = 9
 THRESHOLD = .82
 CHAR_THRESHOLD = .65
-CHAR_THRESHOLD_LOOSE = .59
+CHAR_THRESHOLD_LOOSE = .4
 
 REFFOLDER = pathlib.Path(sys.argv[0]).parent / 'ref'
 
@@ -115,8 +115,9 @@ def getCharactersFromImage(matWindow, templates, threshold):
     for cpt in charPtList.keys():
         (charValue, charScore)  = charPtList[cpt]
         ccol = cpt[0]
-        charValPositionList.append((ccol, charValue)) #sort each character img by its relative col position in the img
+        charValPositionList.append((ccol, charValue))
 
+    # sort each character img by its relative col position in the img
     charValPositionList = sorted(charValPositionList, key = lambda x: x[0])
     valueString = ""
     prevccol = -1
@@ -348,13 +349,15 @@ def load_template_images(settings, template_dir):
     return settings
 
 def analyze_image_for_discord(image_path, settings, template_dir):
+    global LABEL
+    LABEL = True
     try:
         settings = load_template_images(settings, template_dir)
         with open(REFFOLDER / 'characters.json') as fp:
             characters = json.load(fp)
             characters = load_template_images(characters, REFFOLDER)
             settings.extend(characters)
-        result = analyze_image(image_path, settings, False)
+        result = analyze_image(image_path, settings)
         result['matched'] = True
     except Exception as e:
         result = { 'matched': False, 'exception': e }

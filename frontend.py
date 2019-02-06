@@ -93,16 +93,15 @@ if __name__ == '__main__':
     arg_parser.add_argument('-p', '--polling_frequency', required=False, default=60, help='how often to check for new images in seconds')
     args = arg_parser.parse_args()
 
-    logging.basicConfig(format='%(relativeCreated)6d %(threadName)s %(message)s', level=logging.ERROR,
+    logging.basicConfig(format='%(relativeCreated)6d %(threadName)s %(message)s', level=logging.DEBUG,
                         filename='logfile.log',
                         filemode='w')
     logging.getLogger('').addHandler(logging.StreamHandler())
 
-    node_directory_list = get_node_directories()
     process_pool = multiprocessing.Pool(processes=int(args.num_processes))
 
     while not TERMINATE:
-        for wi in check_dirs_for_new_images(node_directory_list):
+        for wi in check_dirs_for_new_images(get_node_directories()):
             with open(SCRIPT_BASE_PATH / 'input' / wi.parts[-2] / 'settings.json') as fp: settings = json.load(fp)
             process_pool.apply_async(fgo_mat_counter.analyze_image_for_discord,
                                      [wi, settings, SCRIPT_BASE_PATH / 'input'/ wi.parts[-2] / 'files'],
