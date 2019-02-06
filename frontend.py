@@ -79,7 +79,7 @@ def handle_success(result):
         result['drops'] = convert_score_to_float_for_json(result['drops'])
     else:
         logging.error(f'analysis failed: {result}')
-        result.pop('exception')
+        result['exception'] = repr(result['exception'])
     create_result_json_file(result)
 
 
