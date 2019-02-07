@@ -93,7 +93,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('-p', '--polling_frequency', required=False, default=60, help='how often to check for new images in seconds')
     args = arg_parser.parse_args()
 
-    logging.basicConfig(format='%(relativeCreated)6d %(threadName)s %(message)s', level=logging.DEBUG,
+    logging.basicConfig(format='%(relativeCreated)6d %(threadName)s %(message)s', level=logging.ERROR,
                         filename='logfile.log',
                         filemode='w')
     logging.getLogger('').addHandler(logging.StreamHandler())

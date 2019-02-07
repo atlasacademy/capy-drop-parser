@@ -349,8 +349,6 @@ def load_template_images(settings, template_dir):
     return settings
 
 def analyze_image_for_discord(image_path, settings, template_dir):
-    global LABEL
-    LABEL = True
     try:
         settings = load_template_images(settings, template_dir)
         with open(REFFOLDER / 'characters.json') as fp:
