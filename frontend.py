@@ -10,6 +10,7 @@ import time
 import os
 import errno
 import shutil
+import operator
 
 import fgo_mat_counter
 
@@ -77,6 +78,7 @@ def handle_success(result):
     if result['matched'] == True:
         result['drops'] = normalize_drop_locations(result['drops'])
         result['drops'] = convert_score_to_float_for_json(result['drops'])
+        result['drops'].sort(key=operator.itemgetter('y', 'x'))
     else:
         logging.error(f'analysis failed: {result}')
         result['exception'] = repr(result['exception'])
