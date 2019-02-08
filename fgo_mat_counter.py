@@ -150,7 +150,7 @@ def get_stack_sizes(image, mat_drops, templates):
         drop['stack'] = 0
         for currency in currencies:
             if drop['id'] == currency['id']:
-                character_image = image[drop['y']+60:drop['y']+mat_height-20, drop['x']:drop['x']+mat_width]
+                character_image = image[drop['y']+60:drop['y']+mat_height-10, drop['x']:drop['x']+mat_width]
                 stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD)
                 if (not checkValueString(stack_size_string)):
                     logging.warning(f"failed to get stack count for {drop}, retrying with lower threshold")

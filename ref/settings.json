@@ -274,5 +274,25 @@
   {
     "id": "Spirit Root.png",
     "type": "material"
+  },
+    {
+    "id": "valentine_2019_saber_coin.png",
+    "type": "currency"
+  },
+  {
+    "id": "valentine_2019_archer_coin.png",
+    "type": "currency"
+  },
+  {
+    "id": "valentine_2019_all_coin.png",
+    "type": "currency"
+  },
+    {
+    "id": "valentine_2019_lancer_coin.png",
+    "type": "currency"
+  },
+  {
+    "id": "valentine_2019_choco.png",
+    "type": "currency"
   }
 ]

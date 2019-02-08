@@ -215,6 +215,38 @@ class TestEvents(unittest.TestCase):
             result['drops'].sort(key=operator.itemgetter('id', 'stack'))
             self.assertEqual(expected_result, result)
 
+    def test_valentine_2019_expert_knights(self):
+        expected = {'qp_gained': 6400, 'qp_total': 170761518, 'scroll_position': 0, 'drop_count': 19, 'drops': [
+            {'id': 'Archer Piece.png', 'x': 129, 'y': 24, 'score': 0.9497172, 'stack': 0},
+            {'id': 'qp.png', 'x': 17, 'y': 18, 'score': 0.9961114, 'stack': 0},
+            {'id': 'valentine_2019_saber_coin.png', 'x': 239, 'y': 21, 'score': 0.96185666, 'stack': 2},
+            {'id': 'valentine_2019_saber_coin.png', 'x': 351, 'y': 21, 'score': 0.9453553, 'stack': 2},
+            {'id': 'valentine_2019_saber_coin.png', 'x': 462, 'y': 21, 'score': 0.9788375, 'stack': 2},
+            {'id': 'valentine_2019_saber_coin.png', 'x': 573, 'y': 21, 'score': 0.9396837, 'stack': 2},
+            {'id': 'valentine_2019_lancer_coin.png', 'x': 128, 'y': 136, 'score': 0.95286167, 'stack': 2},
+            {'id': 'valentine_2019_lancer_coin.png', 'x': 16, 'y': 137, 'score': 0.9263724, 'stack': 2},
+            {'id': 'valentine_2019_all_coin.png', 'x': 462, 'y': 137, 'score': 0.9618784, 'stack': 2},
+            {'id': 'valentine_2019_archer_coin.png', 'x': 684, 'y': 21, 'score': 0.9435896, 'stack': 2},
+            {'id': 'valentine_2019_all_coin.png', 'x': 351, 'y': 131, 'score': 0.9674793, 'stack': 2},
+            {'id': 'valentine_2019_all_coin.png', 'x': 239, 'y': 132, 'score': 0.93297756, 'stack': 2},
+            {'id': 'valentine_2019_choco.png', 'x': 573, 'y': 128, 'score': 0.99094504, 'stack': 6},
+            {'id': 'valentine_2019_choco.png', 'x': 685, 'y': 128, 'score': 0.99210346, 'stack': 7},
+            {'id': 'valentine_2019_choco.png', 'x': 17, 'y': 243, 'score': 0.98842907, 'stack': 7},
+            {'id': 'valentine_2019_choco.png', 'x': 128, 'y': 243, 'score': 0.9940306, 'stack': 7},
+            {'id': 'valentine_2019_choco.png', 'x': 239, 'y': 243, 'score': 0.993614, 'stack': 6},
+            {'id': 'valentine_2019_choco.png', 'x': 351, 'y': 243, 'score': 0.9881494, 'stack': 7},
+            {'id': 'valentine_2019_choco.png', 'x': 462, 'y': 243, 'score': 0.995087, 'stack': 7},
+            {'id': 'valentine_2019_choco.png', 'x': 573, 'y': 243, 'score': 0.99105835, 'stack': 7}]}
+
+        expected_result = remove_scores(remove_location(remove_qp_drops(remove_scroll_position(expected))))
+        expected_result['drops'].sort(key=operator.itemgetter('id', 'stack'))
+        test_image = os.path.join(os.getcwd(), 'test_data', 'valentine_2019_expert_knight.png')
+        result = remove_scores(remove_location(
+            remove_qp_drops(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL)))))
+        result['drops'].sort(key=operator.itemgetter('id', 'stack'))
+        self.assertEqual(expected_result, result)
+
+
 
 class TestSpecialCases(unittest.TestCase):
     def test_red_filter(self):
