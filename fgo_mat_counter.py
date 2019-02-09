@@ -29,7 +29,7 @@ MIN_DISTANCE = 50
 DIGIT_MIN_DISTANCE = 9
 THRESHOLD = .82
 CHAR_THRESHOLD = .65
-CHAR_THRESHOLD_LOOSE = .4
+CHAR_THRESHOLD_LOOSE = .6
 
 REFFOLDER = pathlib.Path(sys.argv[0]).parent / 'ref'
 
@@ -156,7 +156,7 @@ def get_stack_sizes(image, mat_drops, templates):
                     logging.warning(f"failed to get stack count for {drop}, retrying with lower threshold")
                     stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD_LOOSE)
 
-                logging.debug(f'raw string from character metching: {stack_size_string}')
+                logging.debug(f'raw string from character matching: {stack_size_string}')
                 drop['stack'] = get_stack_base(stack_size_string)
 
 
