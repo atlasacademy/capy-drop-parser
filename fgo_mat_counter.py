@@ -156,7 +156,7 @@ def get_stack_sizes(image, mat_drops, templates):
                     logging.warning(f"failed to get stack count for {drop}, retrying with lower threshold")
                     stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD_LOOSE)
 
-                logging.debug(f'raw string from character matching: {stack_size_string}')
+                logging.debug(f'Raw string from character matching: {stack_size_string}')
                 drop['stack'] = get_stack_base(stack_size_string)
 
 
@@ -282,7 +282,7 @@ def analyze_image(image_path, templates, LABEL=False):
 
     #check if image H W ratio is off
     aspect_ratio = get_aspect_ratio(targetImg)
-    logging.debug('input aspect ratio is {:.2f}, training ratio is {:.2f}'.format(aspect_ratio, TRAINING_IMG_ASPECT_RATIO))
+    logging.debug('Input aspect ratio is {:.2f}, training ratio is {:.2f}.'.format(aspect_ratio, TRAINING_IMG_ASPECT_RATIO))
     if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) > 0.1:
         targetImg = crop_edges(targetImg)
 
@@ -298,12 +298,12 @@ def analyze_image(image_path, templates, LABEL=False):
 
     if(resizeScale > 1):
         matImgResize = 1 / resizeScale
-        line = "Too Small, resizing targetImg with ", matImgResize
+        line = "Too Small, resizing targetImg with factor {:.3f}".format(matImgResize)
         targetImg = cv2.resize(targetImg, (0,0), fx=resizeScale, fy=resizeScale)
         logging.debug(line)
 
     else:
-        line = "Too big, resizing targetImage with ", resizeScale
+        line = "Too big, resizing targetImage with factor {:.3f}.".format(resizeScale)
         logging.debug(line)
         targetImg = cv2.resize(targetImg, (0,0), fx=resizeScale, fy=resizeScale)
 
@@ -379,7 +379,7 @@ def run(image, debug=False, label=False):
     end = time.time()
     duration = end - start
 
-    logging.info(f"Completed in {duration} seconds.")
+    logging.info("Completed in {:.2f} seconds.".format(duration))
     logging.info(f"Result:\n{results}")
     return results
 
