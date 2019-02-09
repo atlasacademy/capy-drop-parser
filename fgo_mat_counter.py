@@ -250,7 +250,9 @@ def get_qp(image):
 
 
 def get_scroll_bar_start_height(image):
-    gray_image = cv2.cvtColor(image[98:98 + 330, 920:920 + 27], cv2.COLOR_BGR2GRAY)
+    height, width, _ = image.shape
+    upper_left_x = width - 117
+    gray_image = cv2.cvtColor(image[98:98 + 330, upper_left_x:upper_left_x + 27], cv2.COLOR_BGR2GRAY)
     _, binary = cv2.threshold(gray_image, 225, 255, cv2.THRESH_BINARY)
     if LABEL: cv2.imwrite('scroll_bar_binary.png', binary)
     _, template = cv2.threshold(cv2.imread(os.path.join(REFFOLDER, 'scroll_bar_upper.png'), cv2.IMREAD_GRAYSCALE), 225, 255, cv2.THRESH_BINARY)
@@ -281,7 +283,7 @@ def analyze_image(image_path, templates, LABEL=False):
     #check if image H W ratio is off
     aspect_ratio = get_aspect_ratio(targetImg)
     logging.debug('input aspect ratio is {:.2f}, training ratio is {:.2f}'.format(aspect_ratio, TRAINING_IMG_ASPECT_RATIO))
-    if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) > 0.25:
+    if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) > 0.1:
         targetImg = crop_edges(targetImg)
 
 
