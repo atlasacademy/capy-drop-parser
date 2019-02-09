@@ -191,24 +191,13 @@ def countMats(targetImg, templates):
 
     return drops
 
-def crop_blue_borders(image):
-    height, width, _ = image.shape
-    new_height = width / TRAINING_IMG_ASPECT_RATIO
-    adjustment = int((height - new_height) / 2)
-
-    image = image[adjustment:height - adjustment, 0:width]
-    if (LABEL):
-        cv2.imwrite('post_blue_crop.png', image)
-
-    return image
-
-def crop_black_edges(targetImg):
+def crop_edges(targetImg):
         # cut all black edges, credit https://stackoverflow.com/questions/13538748/crop-black-edges-with-opencv
         grayImg = cv2.cvtColor(targetImg, cv2.COLOR_BGR2GRAY)
         if (LABEL):
             cv2.imwrite('gray.png', grayImg)
 
-        _, thresh = cv2.threshold(grayImg, 70, 255, cv2.THRESH_BINARY)
+        _, thresh = cv2.threshold(grayImg, 120, 255, cv2.THRESH_BINARY)
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         height, width, _ = targetImg.shape
         min_x = width
@@ -291,13 +280,9 @@ def analyze_image(image_path, templates, LABEL=False):
 
     #check if image H W ratio is off
     aspect_ratio = get_aspect_ratio(targetImg)
-    logging.debug(f'input aspect ratio is {aspect_ratio}, training ratio is {TRAINING_IMG_ASPECT_RATIO}')
+    logging.debug('input aspect ratio is {:.2f}, training ratio is {:.2f}'.format(aspect_ratio, TRAINING_IMG_ASPECT_RATIO))
     if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) > 0.25:
-        targetImg = crop_black_edges(targetImg)
-
-    # Aspect ratio of 1.3 causes FGO to add blue borders on the top and bottom
-    if abs(1.3 - get_aspect_ratio(targetImg)) < 0.1:
-        targetImg = crop_blue_borders(targetImg)
+        targetImg = crop_edges(targetImg)
 
 
     # refresh channels
