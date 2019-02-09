@@ -49,7 +49,7 @@ def check_dirs_for_new_images(dir_list):
                         if e.errno != errno.EEXIST:
                             raise
                 shutil.copy2(f, new_path)
-                os.remove(f)
+                os.remove(str(f))
                 work_items.append(new_path)
 
     return work_items

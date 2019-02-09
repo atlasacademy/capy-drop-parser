@@ -294,5 +294,21 @@
   {
     "id": "valentine_2019_choco.png",
     "type": "currency"
+  },
+  {
+    "id": "valentine_2019_assassin_coin.png",
+    "type": "currency"
+  },
+  {
+    "id": "valentine_2019_berserker_coin.png",
+    "type": "currency"
+  },
+    {
+    "id": "valentine_2019_caster_coin.png",
+    "type": "currency"
+  },
+  {
+    "id": "valentine_2019_rider_coin.png",
+    "type": "currency"
   }
 ]

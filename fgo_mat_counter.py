@@ -282,15 +282,12 @@ def get_drop_count(image):
         return -1
 
 def analyze_image(image_path, templates, LABEL=False):
-    #read target image
     if not os.path.isfile(image_path):
-        logging.error(f'{image_path} does not exist')
-        return
+        raise Exception(f'{image_path} does not exist')
 
     targetImg = cv2.imread(str(image_path), cv2.IMREAD_COLOR)
     if(targetImg is None):
-        logging.debug(f'{image_path} returned None from imread')
-        return
+        raise Exception(f'{image_path} returned None from imread')
 
     #check if image H W ratio is off
     aspect_ratio = get_aspect_ratio(targetImg)
