@@ -327,7 +327,7 @@ def analyze_image(image_path, templates, LABEL=False):
     qp_gained, qp_total = get_qp(targetImg)
     scroll_position = get_scroll_bar_start_height(targetImg)
     drop_count = get_drop_count(targetImg)
-    return { "qp_gained": qp_gained, "qp_total": qp_total, 'scroll_position': scroll_position, "drop_count": drop_count, "drops": mat_drops }
+    return { "qp_gained": qp_gained, "qp_total": qp_total, 'scroll_position': scroll_position, "drop_count": drop_count, "drops_found": len(mat_drops), "drops": mat_drops }
 
 def load_image(image_path):
     if not os.path.isfile(image_path):
