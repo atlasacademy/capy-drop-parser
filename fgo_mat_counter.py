@@ -192,28 +192,40 @@ def countMats(targetImg, templates):
     return drops
 
 def crop_edges(targetImg):
-        # cut all black edges, credit https://stackoverflow.com/questions/13538748/crop-black-edges-with-opencv
-        grayImg = cv2.cvtColor(targetImg, cv2.COLOR_BGR2GRAY)
-        if (LABEL):
-            cv2.imwrite('gray.png', grayImg)
+    # cut all black edges, credit https://stackoverflow.com/questions/13538748/crop-black-edges-with-opencv
+    grayImg = cv2.cvtColor(targetImg, cv2.COLOR_BGR2GRAY)
+    if (LABEL):
+        cv2.imwrite('gray.png', grayImg)
 
-        _, thresh = cv2.threshold(grayImg, 120, 255, cv2.THRESH_BINARY)
-        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        height, width, _ = targetImg.shape
-        min_x = width
-        min_y = height
-        max_x = 0
-        max_y = 0
-        for cnt in contours:
-            x, y, w, h = cv2.boundingRect(cnt)
-            min_x, max_x = min(x, min_x), max(x + w, max_x)
-            min_y, max_y = min(y, min_y), max(y + h, max_y)
+    _, thresh = cv2.threshold(grayImg, 120, 255, cv2.THRESH_BINARY)
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    height, width, _ = targetImg.shape
+    min_x = width
+    min_y = height
+    max_x = 0
+    max_y = 0
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        min_x, max_x = min(x, min_x), max(x + w, max_x)
+        min_y, max_y = min(y, min_y), max(y + h, max_y)
+    
+    w = max_x - min_x
+    h = max_y - min_y
+    if h * 16/9 > w:
+        w = h * 16/9
+        max_x = round(min_x + w)
+    else:
+        h = w * 9/16
+        min_y = round(max_y - h)
+        if min_y < 0:
+            min_y = 0
+            max_y = round(h)
 
-        targetImg = targetImg[min_y:max_y, min_x:max_x]
-        if (LABEL):
-            cv2.imwrite('post_black_crop.png', targetImg)
+    targetImg = targetImg[min_y:max_y, min_x:max_x]
+    if (LABEL):
+        cv2.imwrite('post_black_crop.png', targetImg)
 
-        return targetImg
+    return targetImg
 
 def get_qp_from_text(text):
     qp = 0
@@ -251,8 +263,8 @@ def get_qp(image):
 
 def get_scroll_bar_start_height(image):
     height, width, _ = image.shape
-    upper_left_x = width - 117
-    gray_image = cv2.cvtColor(image[98:98 + 330, upper_left_x:upper_left_x + 27], cv2.COLOR_BGR2GRAY)
+    upper_left_x = width - 118
+    gray_image = cv2.cvtColor(image[93:93 + 335, upper_left_x:upper_left_x + 30], cv2.COLOR_BGR2GRAY)
     _, binary = cv2.threshold(gray_image, 225, 255, cv2.THRESH_BINARY)
     if LABEL: cv2.imwrite('scroll_bar_binary.png', binary)
     _, template = cv2.threshold(cv2.imread(os.path.join(REFFOLDER, 'scroll_bar_upper.png'), cv2.IMREAD_GRAYSCALE), 225, 255, cv2.THRESH_BINARY)
