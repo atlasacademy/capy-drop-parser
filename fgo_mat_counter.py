@@ -209,7 +209,7 @@ def crop_black_edges(targetImg):
             cv2.imwrite('gray.png', grayImg)
 
         _, thresh = cv2.threshold(grayImg, 70, 255, cv2.THRESH_BINARY)
-        _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         height, width, _ = targetImg.shape
         min_x = width
         min_y = height
