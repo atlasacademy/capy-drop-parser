@@ -236,6 +236,8 @@ def crop_color_borders(targetImg):
         logging.debug("Abort color crop")
         return targetImg
 
+    min_y = max(min_y - 15, 0)
+
     w = max_x - min_x
     h = max_y - min_y
     if h * 16/9 > w:
@@ -319,6 +321,7 @@ def analyze_image(image_path, templates, LABEL=False):
     #check if image H W ratio is off
     aspect_ratio = get_aspect_ratio(targetImg)
     logging.debug('Input aspect ratio is {:.2f}, training ratio is {:.2f}.'.format(aspect_ratio, TRAINING_IMG_ASPECT_RATIO))
+    # This'll fail if the screenshot is off centered.
     targetImg = crop_16_9_borders(targetImg)
     targetImg = crop_color_borders(targetImg)
 
