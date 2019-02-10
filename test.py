@@ -269,6 +269,40 @@ class TestSpecialCases(unittest.TestCase):
         self.assertEqual(remove_scores(remove_qp_drops(remove_location(remove_scroll_position(expected)))),
                          remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
 
+    def test_side_bottom_blue_border(self):
+        self.maxDiff = None
+        expected = {'qp_gained': 8400, 'qp_total': 710822575, 'scroll_position': 0, 'drop_count': 26, 'drops_found': 21, 'drops':
+            [{'id': 'Magic Gem of Assassin.png', 'x': 351, 'y': 22, 'score': 0.96120733, 'stack': 0},
+             {'id': 'Secret Gem of Assassin.png', 'x': 240, 'y': 24, 'score': 0.9222073, 'stack': 0},
+             {'id': 'qp.png', 'x': 17, 'y': 18, 'score': 0.9790159, 'stack': 0},
+             {'id': 'Forbidden Page.png', 'x': 128, 'y': 23, 'score': 0.8865578, 'stack': 0},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 573, 'y': 18, 'score': 0.9447703, 'stack': 2},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 685, 'y': 19, 'score': 0.97349775, 'stack': 2},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 127, 'y': 133, 'score': 0.9399135, 'stack': 2},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 350, 'y': 133, 'score': 0.93968415, 'stack': 2},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 573, 'y': 133, 'score': 0.93755686, 'stack': 2},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 16, 'y': 134, 'score': 0.9659351, 'stack': 2},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 239, 'y': 134, 'score': 0.96467453, 'stack': 2},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 462, 'y': 134, 'score': 0.9639296, 'stack': 2},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 685, 'y': 134, 'score': 0.9667589, 'stack': 2},
+             {'id': 'valentine_2019_all_coin.png', 'x': 238, 'y': 248, 'score': 0.94676495, 'stack': 2},
+             {'id': 'valentine_2019_all_coin.png', 'x': 350, 'y': 248, 'score': 0.95076126, 'stack': 2},
+             {'id': 'valentine_2019_all_coin.png', 'x': 461, 'y': 248, 'score': 0.9395817, 'stack': 2},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 16, 'y': 249, 'score': 0.95510703, 'stack': 2},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 127, 'y': 249, 'score': 0.9289505, 'stack': 2},
+             {'id': 'valentine_2019_choco.png', 'x': 573, 'y': 244, 'score': 0.9911243, 'stack': 5},
+             {'id': 'valentine_2019_choco.png', 'x': 684, 'y': 244, 'score': 0.98415077, 'stack': 6},
+             {'id': 'valentine_2019_assassin_coin.png', 'x': 462, 'y': 18, 'score': 0.9705379, 'stack': 2}]}
+
+        expected = remove_scores(remove_qp_drops(remove_scroll_position(expected)))
+        frontend.normalize_drop_locations(expected['drops'])
+        expected['drops'].sort(key=operator.itemgetter('y', 'x'))
+        test_image = os.path.join(os.getcwd(), 'test_data', 'side_bottom_blue_borders.png')
+        result = remove_scores(remove_qp_drops(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))
+        frontend.normalize_drop_locations(result['drops'])
+        result['drops'].sort(key=operator.itemgetter('y', 'x'))
+        self.assertEqual(expected, result)
+
 
 class TestScrollBarLocation(unittest.TestCase):
     def test_scroll_at_top(self):
