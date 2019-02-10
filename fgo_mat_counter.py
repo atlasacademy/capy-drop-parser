@@ -204,10 +204,7 @@ def crop_top_bottom_blue_borders(image):
 
 def crop_side_and_bottom_blue_borders(image):
     height, width, _ = image.shape
-    new_height = width / TRAINING_IMG_ASPECT_RATIO
-    height_adjustment = int((height - new_height) / 2)
-
-    image = image[0:height - height_adjustment, 275:width - 275]
+    image = image[0:height - 60, 275:width - 275]
     if (LABEL):
         cv2.imwrite('post_2.1_ratio_crop.png', image)
 
