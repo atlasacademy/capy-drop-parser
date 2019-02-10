@@ -191,14 +191,25 @@ def countMats(targetImg, templates):
 
     return drops
 
-def crop_blue_borders(image):
+def crop_top_bottom_blue_borders(image):
     height, width, _ = image.shape
     new_height = width / TRAINING_IMG_ASPECT_RATIO
     adjustment = int((height - new_height) / 2)
 
     image = image[adjustment:height - adjustment, 0:width]
     if (LABEL):
-        cv2.imwrite('post_blue_crop.png', image)
+        cv2.imwrite('post_1.3_ratio_crop.png', image)
+
+    return image
+
+def crop_side_and_bottom_blue_borders(image):
+    height, width, _ = image.shape
+    new_height = width / TRAINING_IMG_ASPECT_RATIO
+    height_adjustment = int((height - new_height) / 2)
+
+    image = image[0:height - height_adjustment, 275:width - 275]
+    if (LABEL):
+        cv2.imwrite('post_2.1_ratio_crop.png', image)
 
     return image
 
@@ -297,8 +308,11 @@ def analyze_image(image_path, templates, LABEL=False):
 
     # Aspect ratio of 1.3 causes FGO to add blue borders on the top and bottom
     if abs(1.3 - get_aspect_ratio(targetImg)) < 0.1:
-        targetImg = crop_blue_borders(targetImg)
+        targetImg = crop_top_bottom_blue_borders(targetImg)
 
+    # Aspect ratio of 2.165 causes FGO to add blue borders to both sides and the bottom; at least on some devices.
+    if abs(2.165 - get_aspect_ratio(targetImg)) < 0.1:
+        targetImg = crop_side_and_bottom_blue_borders(targetImg)
 
     # refresh channels
     height, width, channels = targetImg.shape
