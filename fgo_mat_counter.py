@@ -191,7 +191,27 @@ def countMats(targetImg, templates):
 
     return drops
 
-def crop_edges(targetImg):
+def crop_16_9_borders(image):
+    height, width, _ = image.shape
+    aspect_ratio = width/height
+    if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) < 0.01:
+        return image
+    elif aspect_ratio < TRAINING_IMG_ASPECT_RATIO:
+        new_height = width / TRAINING_IMG_ASPECT_RATIO
+        adjustment = int((height - new_height) / 2)
+        image = image[adjustment:height - adjustment, 0:width]
+        if (LABEL):
+            cv2.imwrite('post_16_9_crop.png', image)
+        return image
+    elif aspect_ratio > TRAINING_IMG_ASPECT_RATIO:
+        new_width = height * TRAINING_IMG_ASPECT_RATIO
+        adjustment = int((width - new_width) / 2)
+        image = image[0:height, adjustment:width - adjustment]
+        if (LABEL):
+            cv2.imwrite('post_16_9_crop.png', image)
+        return image    
+
+def crop_color_borders(targetImg):
     # cut all black edges, credit https://stackoverflow.com/questions/13538748/crop-black-edges-with-opencv
     grayImg = cv2.cvtColor(targetImg, cv2.COLOR_BGR2GRAY)
     if (LABEL):
@@ -209,6 +229,13 @@ def crop_edges(targetImg):
         min_x, max_x = min(x, min_x), max(x + w, max_x)
         min_y, max_y = min(y, min_y), max(y + h, max_y)
     
+    # 0.04 chosen because of the black and blue border image. Too high and the image won't get cropped
+    # Too low and other images will get cropped unnessarily.
+    if (min_x/width < 0.04 or abs(width - max_x) < 0.04)/width and\
+        (min_y/height < 0.04 and abs(height - max_y)/height < 0.04):
+        logging.debug("Abort color crop")
+        return targetImg
+
     w = max_x - min_x
     h = max_y - min_y
     if h * 16/9 > w:
@@ -216,10 +243,7 @@ def crop_edges(targetImg):
         max_x = round(min_x + w)
     else:
         h = w * 9/16
-        min_y = round(max_y - h)
-        if min_y < 0:
-            min_y = 0
-            max_y = round(h)
+        max_y = round(min_y + h)
 
     targetImg = targetImg[min_y:max_y, min_x:max_x]
     if (LABEL):
@@ -295,9 +319,8 @@ def analyze_image(image_path, templates, LABEL=False):
     #check if image H W ratio is off
     aspect_ratio = get_aspect_ratio(targetImg)
     logging.debug('Input aspect ratio is {:.2f}, training ratio is {:.2f}.'.format(aspect_ratio, TRAINING_IMG_ASPECT_RATIO))
-    if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) > 0.1:
-        targetImg = crop_edges(targetImg)
-
+    targetImg = crop_16_9_borders(targetImg)
+    targetImg = crop_color_borders(targetImg)
 
     # refresh channels
     height, width, channels = targetImg.shape
