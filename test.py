@@ -269,6 +269,16 @@ class TestSpecialCases(unittest.TestCase):
         self.assertEqual(remove_scores(remove_qp_drops(remove_location(remove_scroll_position(expected)))),
                          remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
 
+    def test_blue_and_black_borders_light_background(self):
+        expected = {'qp_gained': 668900, 'qp_total': 755521417, 'drop_count': 6, 'drops_found': 4, 'drops': [
+            {'id': 'Shining Gem of Assassin.png', 'x': 350, 'y': 7, 'score': '0.97608447', 'stack': 0},
+            {'id': 'Magic Gem of Assassin.png', 'x': 240, 'y': 8, 'score': '0.95031976', 'stack': 0},
+            {'id': 'Homunculus Baby.png', 'x': 128, 'y': 9, 'score': '0.94004923', 'stack': 0}]}
+
+        test_image = os.path.join(os.getcwd(), 'test_data', 'black_and_blue_border_light_bg.jpg')
+        self.assertEqual(remove_scores(remove_qp_drops(remove_location(remove_scroll_position(expected)))),
+                         remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
+
     def test_side_bottom_blue_border(self):
         self.maxDiff = None
         expected = {'qp_gained': 8400, 'qp_total': 710822575, 'scroll_position': 0, 'drop_count': 26, 'drops_found': 21, 'drops':
