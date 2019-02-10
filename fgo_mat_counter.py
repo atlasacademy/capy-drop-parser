@@ -229,14 +229,15 @@ def crop_color_borders(targetImg):
         min_x, max_x = min(x, min_x), max(x + w, max_x)
         min_y, max_y = min(y, min_y), max(y + h, max_y)
     
+    if min_y < 20:
+        min_y = 0
+
     # 0.04 chosen because of the black and blue border image. Too high and the image won't get cropped
     # Too low and other images will get cropped unnessarily.
     if min_x/width < 0.04 and abs(width - max_x)/width < 0.04 and\
         min_y/height < 0.04 and abs(height - max_y)/height < 0.04:
         logging.debug("Abort color crop")
         return targetImg
-
-    min_y = max(min_y - 15, 0)
 
     w = max_x - min_x
     h = max_y - min_y
