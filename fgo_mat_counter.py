@@ -300,7 +300,7 @@ def analyze_image(image_path, templates, LABEL=False):
     #check if image H W ratio is off
     aspect_ratio = get_aspect_ratio(targetImg)
     logging.debug(f'input aspect ratio is {aspect_ratio}, training ratio is {TRAINING_IMG_ASPECT_RATIO}')
-    if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) > 0.25:
+    if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) > 0.1:
         targetImg = crop_black_edges(targetImg)
 
     # Aspect ratio of 1.3 causes FGO to add blue borders on the top and bottom
