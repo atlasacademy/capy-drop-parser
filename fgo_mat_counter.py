@@ -38,12 +38,6 @@ OFFSET_WIDTH = 13
 BASE_HEIGHT = 22
 BASE_WIDTH = 80
 
-MAT_CROPX = 115
-MAT_CROPY = 100
-MAT_CROPW = 800
-MAT_CROPH = 335
-
-
 def getOverlap(pt, ptList, distance=MIN_DISTANCE):
     row = pt[1]
     col = pt[0]
@@ -160,9 +154,10 @@ def get_stack_sizes(image, mat_drops, templates):
                 drop['stack'] = get_stack_base(stack_size_string)
 
 
+
 def countMats(targetImg, templates):
     #Crop image to just include the mat window
-    targetImg = targetImg[MAT_CROPY:MAT_CROPY + MAT_CROPH, MAT_CROPX:MAT_CROPX + MAT_CROPW]
+    targetImg = targetImg[80:80 + 360, 115:115 + 810]
     if (LABEL):
         cv2.imwrite('just_mats.png', targetImg)
 
