@@ -71,7 +71,7 @@ def create_result_json_file(result):
     image_path = pathlib.Path(result['image_path'])
     json_file_path = image_path.parent / (image_path.stem + '.json')
     with open(json_file_path, 'w') as fp:
-        json.dump(result, fp)
+        json.dump(result, fp, indent=4)
 
 
 def handle_success(result):
