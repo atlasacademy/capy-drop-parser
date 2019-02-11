@@ -247,7 +247,7 @@ def get_qp_from_text(text):
 
 def extract_text_from_image(image, file_name='pytesseract_input.png'):
     gray =  cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, qp_image = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY_INV)
+    _, qp_image = cv2.threshold(gray, 65, 255, cv2.THRESH_BINARY_INV)
 
     if (LABEL):
         cv2.imwrite(file_name, qp_image)
