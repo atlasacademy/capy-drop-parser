@@ -232,12 +232,14 @@ def crop_color_borders(targetImg):
     if min_y < 20:
         min_y = 0
 
-    # 0.04 chosen because of the black and blue border image. Too high and the image won't get cropped
+    # 0.02 chosen because of the black and blue border image. Too high and the image won't get cropped
     # Too low and other images will get cropped unnessarily.
-    if min_x/width < 0.04 and abs(width - max_x)/width < 0.04 and\
-        min_y/height < 0.04 and abs(height - max_y)/height < 0.04:
+    if min_x/width < 0.02 and abs(width - max_x)/width < 0.02 and\
+        min_y/height < 0.02 and abs(height - max_y)/height < 0.02:
         logging.debug("Abort color crop")
         return targetImg
+
+    # min_y = max(min_y - 15, 0)
 
     w = max_x - min_x
     h = max_y - min_y
@@ -267,7 +269,7 @@ def get_qp_from_text(text):
 
 def extract_text_from_image(image, file_name='pytesseract_input.png'):
     gray =  cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, qp_image = cv2.threshold(gray, 80, 255, cv2.THRESH_BINARY_INV)
+    _, qp_image = cv2.threshold(gray, 65, 255, cv2.THRESH_BINARY_INV)
 
     if (LABEL):
         cv2.imwrite(file_name, qp_image)
@@ -306,7 +308,7 @@ def get_aspect_ratio(image):
 
 def get_drop_count(image):
     try:
-        text = extract_text_from_image(image[0:0 + 35, 806:806 + 40], 'drop_count_text.png')
+        text = extract_text_from_image(image[0:0 + 35, 801:801 + 40], 'drop_count_text.png')
         return int(re.search("([0-9]+)", text).group(1))
     except:
         return -1
