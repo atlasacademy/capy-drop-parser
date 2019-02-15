@@ -36,6 +36,14 @@ def remove_scroll_position(dictionary):
     return dictionary
 
 
+def prepare_for_comparison(dictionary):
+    dictionary = remove_scroll_position(dictionary)
+    dictionary = remove_qp_drops(dictionary)
+    dictionary = remove_scores(dictionary)
+    dictionary['drops'] = frontend.normalize_drop_locations(dictionary['drops'])
+    dictionary['drops'].sort(key=operator.itemgetter('y','x'))
+    return dictionary
+
 class TestEvents(unittest.TestCase):
     def test_da_vinci(self):
         expected = {'qp_gained': 9400, 'qp_total': 357256131, 'drop_count': 15, 'drops_found': 16, 'drops': [
@@ -57,7 +65,9 @@ class TestEvents(unittest.TestCase):
         ]}
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'da_vinci.png')
-        self.assertEqual(remove_scores(remove_qp_drops(remove_location(remove_scroll_position(expected)))), remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
+        expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        self.assertEqual(expected, result)
 
     def test_christmas_2018(self):
         expected = {'qp_gained': 6400, 'qp_total': 324783641, 'drop_count': 12, 'drops_found': 13, 'drops': [
@@ -75,8 +85,9 @@ class TestEvents(unittest.TestCase):
             {'id': 'christmas_2018_silver_currency.png', 'x': 128, 'y': 123, 'score': 0.99999964, 'stack': 2}]}
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'christmas_2018.png')
-        self.assertEqual(remove_scores(remove_qp_drops(remove_location(remove_scroll_position(expected)))),
-                         remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
+        expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        self.assertEqual(expected, result)
 
     @unittest.skipUnless(os.path.isdir(os.path.join(os.getcwd(), 'test_data', 'xmas_2018_expert_revo')), 'requries test data for 2018 christmas expert node')
     def test_christmas_2018_expert_revo(self):
@@ -209,10 +220,8 @@ class TestEvents(unittest.TestCase):
 
         base_path = os.path.join(os.getcwd(), 'test_data', 'xmas_2018_expert_revo')
         for file in expected.keys():
-            expected_result = remove_scores(remove_location(remove_qp_drops(remove_scroll_position(expected[file]))))
-            expected_result['drops'].sort(key=operator.itemgetter('id', 'stack'))
-            result = remove_scores(remove_location(remove_qp_drops(remove_scroll_position(fgo_mat_counter.run(os.path.join(base_path, file), DEBUG, LABEL)))))
-            result['drops'].sort(key=operator.itemgetter('id', 'stack'))
+            expected_result = prepare_for_comparison(expected[file])
+            result = prepare_for_comparison(fgo_mat_counter.run(os.path.join(base_path, file), DEBUG, LABEL))
             self.assertEqual(expected_result, result)
 
     def test_valentine_2019_expert_knights(self):
@@ -238,14 +247,10 @@ class TestEvents(unittest.TestCase):
             {'id': 'valentine_2019_choco.png', 'x': 462, 'y': 243, 'score': 0.995087, 'stack': 7},
             {'id': 'valentine_2019_choco.png', 'x': 573, 'y': 243, 'score': 0.99105835, 'stack': 7}]}
 
-        expected_result = remove_scores(remove_location(remove_qp_drops(remove_scroll_position(expected))))
-        expected_result['drops'].sort(key=operator.itemgetter('id', 'stack'))
         test_image = os.path.join(os.getcwd(), 'test_data', 'valentine_2019_expert_knight.png')
-        result = remove_scores(remove_location(
-            remove_qp_drops(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL)))))
-        result['drops'].sort(key=operator.itemgetter('id', 'stack'))
-        self.assertEqual(expected_result, result)
-
+        expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        self.assertEqual(expected, result)
 
 
 class TestSpecialCases(unittest.TestCase):
@@ -256,8 +261,9 @@ class TestSpecialCases(unittest.TestCase):
             {'id': 'Void Dust.png', 'x': 239, 'y': 6, 'score': '0.97221052', 'stack': 0}]}
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'samsung_s9_red_filter_43_percent.jpg')
-        self.assertEqual(remove_scores(remove_qp_drops(remove_location(remove_scroll_position(expected)))),
-                         remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
+        expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        self.assertEqual(expected, result)
 
     def test_blue_and_black_borders(self):
         expected = {'qp_gained': 668900, 'qp_total': 755521417, 'drop_count': 6, 'drops_found': 4, 'drops': [
@@ -266,8 +272,9 @@ class TestSpecialCases(unittest.TestCase):
             {'id': 'Homunculus Baby.png', 'x': 128, 'y': 9, 'score': '0.94004923', 'stack': 0}]}
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'black_and_blue_border.jpg')
-        self.assertEqual(remove_scores(remove_qp_drops(remove_location(remove_scroll_position(expected)))),
-                         remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
+        expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        self.assertEqual(expected, result)
 
     def test_blue_and_black_borders_light_background(self):
         expected = {'qp_gained': 668900, 'qp_total': 755521417, 'drop_count': 6, 'drops_found': 4, 'drops': [
@@ -276,8 +283,9 @@ class TestSpecialCases(unittest.TestCase):
             {'id': 'Homunculus Baby.png', 'x': 128, 'y': 9, 'score': '0.94004923', 'stack': 0}]}
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'black_and_blue_border_light_bg.jpg')
-        self.assertEqual(remove_scores(remove_qp_drops(remove_location(remove_scroll_position(expected)))),
-                         remove_scores(remove_qp_drops(remove_location(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))))
+        expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        self.assertEqual(expected, result)
 
     def test_side_bottom_blue_border(self):
         self.maxDiff = None
@@ -304,13 +312,9 @@ class TestSpecialCases(unittest.TestCase):
              {'id': 'valentine_2019_choco.png', 'x': 684, 'y': 244, 'score': 0.98415077, 'stack': 6},
              {'id': 'valentine_2019_assassin_coin.png', 'x': 462, 'y': 18, 'score': 0.9705379, 'stack': 2}]}
 
-        expected = remove_scores(remove_qp_drops(remove_scroll_position(expected)))
-        frontend.normalize_drop_locations(expected['drops'])
-        expected['drops'].sort(key=operator.itemgetter('y', 'x'))
         test_image = os.path.join(os.getcwd(), 'test_data', 'side_bottom_blue_borders.png')
-        result = remove_scores(remove_qp_drops(remove_scroll_position(fgo_mat_counter.run(test_image, DEBUG, LABEL))))
-        frontend.normalize_drop_locations(result['drops'])
-        result['drops'].sort(key=operator.itemgetter('y', 'x'))
+        expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
         self.assertEqual(expected, result)
 
 
