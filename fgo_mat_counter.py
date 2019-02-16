@@ -320,13 +320,13 @@ def analyze_image(image_path, templates, LABEL=False):
     if(resizeScale > 1):
         matImgResize = 1 / resizeScale
         line = "Too Small, resizing targetImg with ", matImgResize
-        targetImg = cv2.resize(targetImg, (0,0), fx=resizeScale, fy=resizeScale)
+        targetImg = cv2.resize(targetImg, (0,0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_CUBIC)
         logging.debug(line)
 
     else:
         line = "Too big, resizing targetImage with ", resizeScale
         logging.debug(line)
-        targetImg = cv2.resize(targetImg, (0,0), fx=resizeScale, fy=resizeScale)
+        targetImg = cv2.resize(targetImg, (0,0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_AREA)
 
     if(LABEL):
         cv2.imwrite('resized.png',targetImg)
