@@ -393,5 +393,6 @@ class TestFrontend(unittest.TestCase):
         self.assertEqual(expected, frontend.normalize_drop_locations(input_data))
 
 
+
 if __name__ == '__main__':
     unittest.main()

@@ -407,7 +407,7 @@ def run(image, debug=False, label=False):
         settings.extend(characters)
 
 
-    print("Running...")
+    logging.info("Running...")
     results = analyze_image(image, settings, label)
 
     end = time.time()
