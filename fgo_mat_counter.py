@@ -151,7 +151,11 @@ def get_stack_sizes(image, mat_drops, templates):
                     stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD_LOOSE)
 
                 logging.debug(f'raw string from character matching: {stack_size_string}')
-                drop['stack'] = get_stack_base(stack_size_string)
+                if checkValueString(stack_size_string):
+                    drop['stack'] = get_stack_base(stack_size_string)
+                else:
+                    logging.error(f'Failed to get stack base for {drop}')
+                    drop['stack'] = -1
 
 
 
