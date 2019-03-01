@@ -124,7 +124,7 @@ def getCharactersFromImage(matWindow, templates, threshold):
 def get_stack_base(valueString):
     matches = re.search('x([0-9]+)', valueString)
     if matches is None or matches.group(1) is None:
-        raise Exception('failed to find base stack size')
+        raise Exception('Failed to find base stack size')
 
     return int(matches.group(1))
 
@@ -147,10 +147,10 @@ def get_stack_sizes(image, mat_drops, templates):
                 character_image = image[drop['y']+55:drop['y']+mat_height-15, drop['x']:drop['x']+mat_width]
                 stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD)
                 if not checkValueString(stack_size_string):
-                    logging.warning(f"failed to get stack count for {drop}, retrying with lower threshold")
+                    logging.warning(f"Failed to get stack count for {drop}, retrying with lower threshold")
                     stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD_LOOSE)
 
-                logging.debug(f'raw string from character matching: {stack_size_string}')
+                logging.debug(f'Raw string from character matching: {stack_size_string}')
                 if checkValueString(stack_size_string):
                     drop['stack'] = get_stack_base(stack_size_string)
                 else:
@@ -238,7 +238,7 @@ def get_qp_from_text(text):
     power = 1
     # re matches left to right so reverse the list to process lower orders of magnitude first.
     for match in re.findall('[0-9]+', text)[::-1]:
-        logging.debug(f"qp match: {match}")
+        logging.debug(f"QP match: {match}")
         qp += int(match) * power
         power *= 1000
 
@@ -286,6 +286,7 @@ def get_aspect_ratio(image):
 def get_drop_count(image):
     try:
         text = extract_text_from_image(image[0:0 + 35, 806:806 + 40], 'drop_count_text.png')
+        logging.debug(f'Drop count text: {text}')
         return int(re.search("([0-9]+)", text).group(1))
     except:
         return -1
@@ -300,7 +301,7 @@ def analyze_image(image_path, templates, LABEL=False):
 
     #check if image H W ratio is off
     aspect_ratio = get_aspect_ratio(targetImg)
-    logging.debug(f'input aspect ratio is {aspect_ratio}, training ratio is {TRAINING_IMG_ASPECT_RATIO}')
+    logging.debug(f'Input aspect ratio is {aspect_ratio:.4f}, training ratio is {TRAINING_IMG_ASPECT_RATIO:.4f}')
     if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) > 0.1:
         targetImg = crop_black_edges(targetImg)
 
@@ -323,12 +324,12 @@ def analyze_image(image_path, templates, LABEL=False):
 
     if(resizeScale > 1):
         matImgResize = 1 / resizeScale
-        line = "Too Small, resizing targetImg with ", matImgResize
+        line = f"Too small, resizing targetImage with {matImgResize:.2f}"
         targetImg = cv2.resize(targetImg, (0,0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_CUBIC)
         logging.debug(line)
 
     else:
-        line = "Too big, resizing targetImage with ", resizeScale
+        line = f"Too big, resizing targetImage with {resizeScale:.2f}"
         logging.debug(line)
         targetImg = cv2.resize(targetImg, (0,0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_AREA)
 
@@ -343,11 +344,11 @@ def analyze_image(image_path, templates, LABEL=False):
 
 def load_image(image_path):
     if not os.path.isfile(image_path):
-        raise Exception(f'path is not a file: {image_path}')
+        raise Exception(f'Path is not a file: {image_path}')
 
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
     if image is None:
-        raise Exception(f'failed to load file as image: {image_path}')
+        raise Exception(f'Failed to load file as image: {image_path}')
 
     return image
 
@@ -413,7 +414,7 @@ def run(image, debug=False, label=False):
     end = time.time()
     duration = end - start
 
-    logging.info(f"Completed in {duration} seconds.")
+    logging.info(f"Completed in {duration:.2f} seconds.")
     logging.info(f"Result:\n{results}")
     return results
 
