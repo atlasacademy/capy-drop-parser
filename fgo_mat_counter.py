@@ -31,7 +31,7 @@ THRESHOLD = .82
 CHAR_THRESHOLD = .65
 CHAR_THRESHOLD_LOOSE = .59
 
-REFFOLDER = pathlib.Path(sys.argv[0]).parent / 'ref'
+REFFOLDER = pathlib.Path(__file__).parent / 'ref'
 
 OFFSET_HEIGHT = 75
 OFFSET_WIDTH = 13

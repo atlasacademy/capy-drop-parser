@@ -1,6 +1,7 @@
 import unittest
 import os
 import operator
+import pathlib
 
 import frontend
 import fgo_mat_counter
@@ -11,7 +12,7 @@ LABEL = True
 
 def remove_scores(dictionary):
     for drop in dictionary['drops']:
-        drop.pop('score')
+        drop.pop('score', None)
 
     return dictionary
 
@@ -314,6 +315,31 @@ class TestSpecialCases(unittest.TestCase):
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'side_bottom_blue_borders.png')
         expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        self.assertEqual(expected, result)
+
+    def test_touch_mark(self):
+        self.maxDiff = None
+        expected = {'qp_gained': 9400, 'qp_total': 975005193, 'drop_count': 29, 'drops_found': 16, 'drops':
+            [{'id': 'valentine_2019_lancer_coin.png', 'x': 0, 'y': 0, 'stack': 2},
+             {'id': 'valentine_2019_all_coin.png', 'x': 1, 'y': 0, 'stack': 3},
+             {'id': 'valentine_2019_all_coin.png', 'x': 2, 'y': 0, 'stack': 3},
+             {'id': 'valentine_2019_all_coin.png', 'x': 3, 'y': 0, 'stack': 3},
+             {'id': 'valentine_2019_all_coin.png', 'x': 4, 'y': 0, 'stack': 3},
+             {'id': 'valentine_2019_all_coin.png', 'x': 5, 'y': 0, 'stack': 3},
+             {'id': 'valentine_2019_choco.png', 'x': 6, 'y': 0, 'stack': 6},
+             {'id': 'valentine_2019_choco.png', 'x': 0, 'y': 1, 'stack': 6},
+             {'id': 'valentine_2019_choco.png', 'x': 1, 'y': 1, 'stack': 6},
+             {'id': 'valentine_2019_choco.png', 'x': 2, 'y': 1, 'stack': 6},
+             {'id': 'valentine_2019_choco.png', 'x': 3, 'y': 1, 'stack': 6},
+             {'id': 'valentine_2019_choco.png', 'x': 4, 'y': 1, 'stack': 6},
+             {'id': 'valentine_2019_choco.png', 'x': 5, 'y': 1, 'stack': 6},
+             {'id': 'valentine_2019_choco.png', 'x': 6, 'y': 1, 'stack': 6},
+             {'id': 'valentine_2019_choco.png', 'x': 0, 'y': 2, 'stack': 6},
+             {'id': 'valentine_2019_choco.png', 'x': 1, 'y': 2, 'stack': 6}]}
+
+
+        test_image = pathlib.Path(__file__).parent / 'test_data' / 'touch_mark.png'
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
         self.assertEqual(expected, result)
 
