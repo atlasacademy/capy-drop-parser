@@ -182,5 +182,21 @@
   {
     "id": "char_8_b_w.png",
     "type": "character"
+  },
+  {
+    "id": "char_x_s_w_1.png",
+    "type": "character"
+  },
+  {
+    "id": "char_1_s_w_guda.png",
+    "type": "character"
+  },
+  {
+    "id": "char_4_s_w_guda.png",
+    "type": "character"
+  },
+  {
+    "id": "char_2_s_w_guda.png",
+    "type": "character"
   }
 ]
