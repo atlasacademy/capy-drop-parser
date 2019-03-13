@@ -136,15 +136,13 @@ def checkValueString(valueString):
         return False
 
 def get_stack_sizes(image, mat_drops, templates):
-    mat_height = 104
-    mat_width = 95
     currencies = list(filter(lambda template: template['type'] == 'currency', templates))
     character_templates = list(filter(lambda template: template['type'] == 'character', templates))
     for drop in mat_drops:
         drop['stack'] = 0
         for currency in currencies:
             if drop['id'] == currency['id']:
-                character_image = image[drop['y']+55:drop['y']+mat_height-15, drop['x']:drop['x']+mat_width]
+                character_image = image[drop['y']+61:drop['y']+89, drop['x']+7:drop['x']+95]
                 stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD)
                 if not checkValueString(stack_size_string):
                     logging.warning(f"Failed to get stack count for {drop}, retrying with lower threshold")
