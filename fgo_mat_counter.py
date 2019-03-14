@@ -124,7 +124,7 @@ def getCharactersFromImage(matWindow, templates, threshold, x, y, pos):
 
 def get_stack_base(valueString):
     matches = re.search('(x|\+)([0-9]+)', valueString)
-    if matches is None or matches.group(1) is None:
+    if matches is None or matches.group(2) is None:
         raise Exception('Failed to find base stack size')
 
     return int(matches.group(2))
@@ -138,10 +138,10 @@ def checkValueString(valueString):
 
 def get_stack_base_top(valueString):
     matches = re.search('(x|\+)([0-9]+)', valueString)
-    if matches is None or matches.group(1) is None:
+    if matches is None or matches.group(2) is None:
         raise Exception('Failed to find base stack size')
 
-    return int(matches.group(1))
+    return int(matches.group(2))
 
 def checkValueStringTop(valueString):
     try:
@@ -159,7 +159,7 @@ def get_stack_sizes(image, mat_drops, templates):
             if drop['id'] == currency['id']:
                 top_line = image[drop['y']+40:drop['y']+69, drop['x']+7:drop['x']+88]
                 top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD, drop['x'], drop['y'], "atop")
-                if not checkValueString(top_stack_size_string):
+                if not checkValueStringTop(top_stack_size_string):
                     logging.warning(f"Failed to get top stack count for {drop}, retrying with lower threshold")
                     top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD_LOOSE, drop['x'], drop['y'], "atop")
 
