@@ -310,5 +310,9 @@
   {
     "id": "valentine_2019_rider_coin.png",
     "type": "currency"
+  },
+  {
+    "id": "guda_point.png",
+    "type": "currency"
   }
 ]

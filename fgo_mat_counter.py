@@ -72,7 +72,7 @@ def countMat(targetImg, template, ptList):
                 ptList[overLapPt] = (template['id'], score)
 
 
-def getCharactersFromImage(matWindow, templates, threshold):
+def getCharactersFromImage(matWindow, templates, threshold, x, y, pos):
     charPtList = {}
 
     resultsImg = None
@@ -102,6 +102,7 @@ def getCharactersFromImage(matWindow, templates, threshold):
     if(LABEL):
         for cpt in charPtList.keys():
             cv2.rectangle(resultsImg, cpt, (cpt[0] + h, cpt[1] + w), (0, 0, 255), 1)
+        #cv2.imwrite(f'current_character_window_{y}_{x}_{pos}.png', resultsImg)
         cv2.imwrite(f'current_character_window.png', resultsImg)
 
     #finished evaluating characters, construct number representation of mats
@@ -122,15 +123,29 @@ def getCharactersFromImage(matWindow, templates, threshold):
     return valueString
 
 def get_stack_base(valueString):
-    matches = re.search('x([0-9]+)', valueString)
+    matches = re.search('(x|\+)([0-9]+)', valueString)
+    if matches is None or matches.group(1) is None:
+        raise Exception('Failed to find base stack size')
+
+    return int(matches.group(2))
+
+def checkValueString(valueString):
+    try:
+        get_stack_base(valueString)
+        return True
+    except:
+        return False
+
+def get_stack_base_top(valueString):
+    matches = re.search('(x|\+)([0-9]+)', valueString)
     if matches is None or matches.group(1) is None:
         raise Exception('Failed to find base stack size')
 
     return int(matches.group(1))
 
-def checkValueString(valueString):
+def checkValueStringTop(valueString):
     try:
-        get_stack_base(valueString)
+        get_stack_base_top(valueString)
         return True
     except:
         return False
@@ -142,18 +157,28 @@ def get_stack_sizes(image, mat_drops, templates):
         drop['stack'] = 0
         for currency in currencies:
             if drop['id'] == currency['id']:
-                character_image = image[drop['y']+61:drop['y']+89, drop['x']+7:drop['x']+95]
-                stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD)
-                if not checkValueString(stack_size_string):
-                    logging.warning(f"Failed to get stack count for {drop}, retrying with lower threshold")
-                    stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD_LOOSE)
+                top_line = image[drop['y']+40:drop['y']+69, drop['x']+7:drop['x']+88]
+                top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD, drop['x'], drop['y'], "atop")
+                if not checkValueString(top_stack_size_string):
+                    logging.warning(f"Failed to get top stack count for {drop}, retrying with lower threshold")
+                    top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD_LOOSE, drop['x'], drop['y'], "atop")
 
-                logging.debug(f'Raw string from character matching: {stack_size_string}')
-                if checkValueString(stack_size_string):
-                    drop['stack'] = get_stack_base(stack_size_string)
+                if checkValueStringTop(top_stack_size_string):
+                    logging.debug(f"Raw string for   top  line at {drop['y']:3d}_{drop['x']:3d}: {top_stack_size_string}")
+                    drop['stack'] = get_stack_base_top(top_stack_size_string)
                 else:
-                    logging.error(f'Failed to get stack base for {drop}')
-                    drop['stack'] = -1
+                    bottom_line = image[drop['y']+61:drop['y']+89, drop['x']+7:drop['x']+95]
+                    stack_size_string = getCharactersFromImage(bottom_line, character_templates, CHAR_THRESHOLD, drop['x'], drop['y'], "bottom")
+                    if not checkValueString(stack_size_string):
+                        logging.warning(f"Failed to get bottom stack count for {drop}, retrying with lower threshold")
+                        stack_size_string = getCharactersFromImage(bottom_line, character_templates, CHAR_THRESHOLD_LOOSE, drop['x'], drop['y'], "bottom")
+
+                    logging.debug(f"Raw string for bottom line at {drop['y']:3d}_{drop['x']:3d}: {stack_size_string}")
+                    if checkValueString(stack_size_string):
+                        drop['stack'] = get_stack_base(stack_size_string)
+                    else:
+                        logging.error(f'Failed to get bottom stack count for {drop}')
+                        drop['stack'] = -1
 
 
 
