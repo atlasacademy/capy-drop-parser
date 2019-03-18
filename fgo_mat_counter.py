@@ -16,7 +16,6 @@ import pytesseract
 import re
 import json
 import pathlib
-import sys
 
 LABEL = False
 DEBUG = False
@@ -44,7 +43,7 @@ def getOverlap(pt, ptList, distance=MIN_DISTANCE):
     for prevPt in ptList.keys():
         prevRow = prevPt[1]
         prevCol = prevPt[0]
-        if(abs(prevRow - row) < distance and abs(prevCol - col) < distance):
+        if abs(prevRow - row) < distance and abs(prevCol - col) < distance:
             return prevPt
     return None
 
@@ -54,7 +53,6 @@ def getCharTagValue(char):
     return valueChar
 
 def countMat(targetImg, template, ptList):
-    w, h = template['image'].shape[:-1]
     res = cv2.matchTemplate(targetImg, template['image'], cv2.TM_CCOEFF_NORMED)
     loc = np.asarray(res >= THRESHOLD).nonzero()
 
@@ -64,11 +62,11 @@ def countMat(targetImg, template, ptList):
     for pt in zip(*loc[::-1]):
         score = res[pt[1]][pt[0]]
         overLapPt = getOverlap(pt, ptList)
-        if(overLapPt == None):
+        if overLapPt is None:
             ptList[pt] = (template['id'], score)
         else:
             oldScore = ptList[overLapPt][1]
-            if(score > oldScore):
+            if score > oldScore:
                 ptList[overLapPt] = (template['id'], score)
 
 
@@ -77,7 +75,7 @@ def getCharactersFromImage(matWindow, templates, threshold, x, y, pos):
 
     resultsImg = None
 
-    if(LABEL):
+    if LABEL:
         resultsImg = matWindow.copy()
 
     for char in templates:
@@ -91,15 +89,15 @@ def getCharactersFromImage(matWindow, templates, threshold, x, y, pos):
         for cpt in zip(*charLoc[::-1]):  # Switch collumns and rows
             charScore = charRes[cpt[1]][cpt[0]]
             overlapCharPt = getOverlap(cpt, charPtList, DIGIT_MIN_DISTANCE)
-            if(overlapCharPt == None):
+            if overlapCharPt is None:
                 charPtList[cpt] = (charValue, charScore)
             else:
                 oldCharScore = charPtList[overlapCharPt][1]
-                if(charScore > oldCharScore):
+                if charScore > oldCharScore:
                     charPtList[overlapCharPt] = (charValue, charScore)
                     #print "old -> new: %s -> %s @ %s [ %f vs %f ] " % (oldCharName, charValue, cpt, oldCharScore, charScore)
 
-    if(LABEL):
+    if LABEL:
         for cpt in charPtList.keys():
             cv2.rectangle(resultsImg, cpt, (cpt[0] + h, cpt[1] + w), (0, 0, 255), 1)
         #cv2.imwrite(f'current_character_window_{y}_{x}_{pos}.png', resultsImg)
@@ -117,7 +115,7 @@ def getCharactersFromImage(matWindow, templates, threshold, x, y, pos):
     valueString = ""
     prevccol = -1
     for charValue  in charValPositionList:
-        if(prevccol >= 0 and ccol - prevccol > DIGIT_MIN_DISTANCE):
+        if prevccol >= 0 and ccol - prevccol > DIGIT_MIN_DISTANCE:
             valueString += ' '
         valueString += charValue[1]
     return valueString
@@ -151,8 +149,8 @@ def checkValueStringTop(valueString):
         return False
 
 def get_stack_sizes(image, mat_drops, templates):
-    currencies = list(filter(lambda template: template['type'] == 'currency', templates))
-    character_templates = list(filter(lambda template: template['type'] == 'character', templates))
+    currencies = [template for template in templates if template["type"] == "currency"]
+    character_templates = [template for template in templates if template["type"] == "character"]
     for drop in mat_drops:
         drop['stack'] = 0
         for currency in currencies:
@@ -185,12 +183,12 @@ def get_stack_sizes(image, mat_drops, templates):
 def countMats(targetImg, templates):
     #Crop image to just include the mat window
     targetImg = targetImg[80:80 + 360, 115:115 + 810]
-    if (LABEL):
+    if LABEL:
         cv2.imwrite('just_mats.png', targetImg)
 
     #search and mark target img for mat templates
     ptList = {}
-    for mat in list(filter(lambda template: template['type'] == 'material' or template['type'] == 'currency', templates)):
+    for mat in [template for template in templates if template["type"] == "material" or template["type"] == "currency"]:
         countMat(targetImg, mat, ptList)
 
     drops = []
@@ -219,7 +217,7 @@ def crop_top_bottom_blue_borders(image):
     adjustment = int((height - new_height) / 2)
 
     image = image[adjustment:height - adjustment, 0:width]
-    if (LABEL):
+    if LABEL:
         cv2.imwrite('post_1.3_ratio_crop.png', image)
 
     return image
@@ -227,7 +225,7 @@ def crop_top_bottom_blue_borders(image):
 def crop_side_and_bottom_blue_borders(image):
     height, width, _ = image.shape
     image = image[0:height - 60, 275:width - 275]
-    if (LABEL):
+    if LABEL:
         cv2.imwrite('post_2.1_ratio_crop.png', image)
 
     return image
@@ -235,7 +233,7 @@ def crop_side_and_bottom_blue_borders(image):
 def crop_black_edges(targetImg):
         # cut all black edges, credit https://stackoverflow.com/questions/13538748/crop-black-edges-with-opencv
         grayImg = cv2.cvtColor(targetImg, cv2.COLOR_BGR2GRAY)
-        if (LABEL):
+        if LABEL:
             cv2.imwrite('gray.png', grayImg)
 
         _, thresh = cv2.threshold(grayImg, 70, 255, cv2.THRESH_BINARY)
@@ -251,7 +249,7 @@ def crop_black_edges(targetImg):
             min_y, max_y = min(y, min_y), max(y + h, max_y)
 
         targetImg = targetImg[min_y:max_y, min_x:max_x]
-        if (LABEL):
+        if LABEL:
             cv2.imwrite('post_black_crop.png', targetImg)
 
         return targetImg
@@ -271,7 +269,7 @@ def extract_text_from_image(image, file_name='pytesseract_input.png'):
     gray =  cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     _, qp_image = cv2.threshold(gray, 65, 255, cv2.THRESH_BINARY_INV)
 
-    if (LABEL):
+    if LABEL:
         cv2.imwrite(file_name, qp_image)
 
     return pytesseract.image_to_string(qp_image, config='-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=,0123456789')
@@ -319,7 +317,7 @@ def analyze_image(image_path, templates, LABEL=False):
         raise Exception(f'{image_path} does not exist')
 
     targetImg = cv2.imread(str(image_path), cv2.IMREAD_COLOR)
-    if(targetImg is None):
+    if targetImg is None:
         raise Exception(f'{image_path} returned None from imread')
 
     #check if image H W ratio is off
@@ -345,7 +343,7 @@ def analyze_image(image_path, templates, LABEL=False):
     scale = min(wscale, hscale)
     resizeScale = TRAINING_IMG_MAT_SCALE / scale
 
-    if(resizeScale > 1):
+    if resizeScale > 1:
         matImgResize = 1 / resizeScale
         line = f"Too small, resizing targetImage with {matImgResize:.2f}"
         targetImg = cv2.resize(targetImg, (0,0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_CUBIC)
@@ -356,7 +354,7 @@ def analyze_image(image_path, templates, LABEL=False):
         logging.debug(line)
         targetImg = cv2.resize(targetImg, (0,0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_AREA)
 
-    if(LABEL):
+    if LABEL:
         cv2.imwrite('resized.png',targetImg)
 
     mat_drops = countMats(targetImg, templates)
@@ -414,17 +412,20 @@ def run(image, debug=False, label=False):
         # tell the handler to use this format
         logging.getLogger('').addHandler(iolog)
 
-    base_dir_image = os.path.dirname(image)
-    custom_settings = base_dir_image + '/settings.json'
-    custom_ref = base_dir_image + '/files'
+    base_settings = os.path.join(REFFOLDER, "settings.json")
+    base_img_dir_image = os.path.dirname(image)
+    custom_settings = os.path.join(base_img_dir_image, "settings.json")
+    custom_ref = os.path.join(base_img_dir_image, "files")
     
     if os.path.exists(custom_settings):
-        with open(custom_settings) as fp: settings = json.load(fp)
-        settings = load_template_images(settings, custom_ref)
+        chosen_setting, chosen_ref = custom_settings, custom_ref
     else:
-        with open(REFFOLDER / 'settings.json') as fp: settings = json.load(fp)
-        settings = load_template_images(settings, REFFOLDER)
+        chosen_setting, chosen_ref = base_settings, REFFOLDER
     
+    with open(chosen_setting) as fp:
+        settings = json.load(fp)
+    settings = load_template_images(settings, chosen_ref)
+        
     with open(REFFOLDER / 'characters.json') as fp:
         characters = json.load(fp)
         characters = load_template_images(characters, REFFOLDER)
