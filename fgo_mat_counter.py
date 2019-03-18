@@ -136,8 +136,8 @@ def checkValueString(valueString):
 def get_stack_sizes(image, mat_drops, templates):
     mat_height = 104
     mat_width = 95
-    currencies = list(filter(lambda template: template['type'] == 'currency', templates))
-    character_templates = list(filter(lambda template: template['type'] == 'character', templates))
+    currencies = [template for template in templates if template["type"] == "currency"]
+    character_templates = [template for template in templates if template["type"] == "character"]
     for drop in mat_drops:
         drop['stack'] = 0
         for currency in currencies:
@@ -165,7 +165,7 @@ def countMats(targetImg, templates):
 
     #search and mark target img for mat templates
     ptList = {}
-    for mat in list(filter(lambda template: template['type'] == 'material' or template['type'] == 'currency', templates)):
+    for mat in [template for template in templates if template["type"] == "material" or template["type"] == "currency"]:
         countMat(targetImg, mat, ptList)
 
     drops = []
