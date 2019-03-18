@@ -389,17 +389,20 @@ def run(image, debug=False, label=False):
         # tell the handler to use this format
         logging.getLogger('').addHandler(iolog)
 
-    base_dir_image = os.path.dirname(image)
-    custom_settings = base_dir_image + '/settings.json'
-    custom_ref = base_dir_image + '/files'
+    base_settings = os.path.join(REFFOLDER, "settings.json")
+    base_img_dir_image = os.path.dirname(image)
+    custom_settings = os.path.join(base_img_dir_image, "settings.json")
+    custom_ref = os.path.join(base_img_dir_image, "files")
     
     if os.path.exists(custom_settings):
-        with open(custom_settings) as fp: settings = json.load(fp)
-        settings = load_template_images(settings, custom_ref)
+        chosen_setting, chosen_ref = custom_settings, custom_ref
     else:
-        with open(REFFOLDER / 'settings.json') as fp: settings = json.load(fp)
-        settings = load_template_images(settings, REFFOLDER)
+        chosen_setting, chosen_ref = base_settings, REFFOLDER
     
+    with open(chosen_setting) as fp:
+        settings = json.load(fp)
+    settings = load_template_images(settings, chosen_ref)
+        
     with open(REFFOLDER / 'characters.json') as fp:
         characters = json.load(fp)
         characters = load_template_images(characters, REFFOLDER)
