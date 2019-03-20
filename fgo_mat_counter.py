@@ -156,26 +156,34 @@ def get_stack_sizes(image, mat_drops, templates):
         for currency in currencies:
             if drop['id'] == currency['id']:
                 top_line = image[drop['y']+40:drop['y']+69, drop['x']+7:drop['x']+88]
+                drop_identifier = f"{drop['y']:3d}_{drop['x']:3d}"
+
                 top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD, drop['x'], drop['y'], "atop")
+                logging.debug(f"{drop_identifier} | 1st try top   : {top_stack_size_string}")
+
                 if not checkValueStringTop(top_stack_size_string):
-                    logging.warning(f"Failed to get top stack count for {drop}, retrying with lower threshold")
                     top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD_LOOSE, drop['x'], drop['y'], "atop")
+                    logging.debug(f"{drop_identifier} | 2nd try top   : {top_stack_size_string}")
 
                 if checkValueStringTop(top_stack_size_string):
-                    logging.debug(f"Raw string for   top  line at {drop['y']:3d}_{drop['x']:3d}: {top_stack_size_string}")
                     drop['stack'] = get_stack_base_top(top_stack_size_string)
+                    logging.debug(f"{drop_identifier} | Top    string : {drop['stack']}")
                 else:
+                    logging.error(f'{drop_identifier} | Failed to get top stack count')
                     bottom_line = image[drop['y']+61:drop['y']+89, drop['x']+7:drop['x']+95]
-                    stack_size_string = getCharactersFromImage(bottom_line, character_templates, CHAR_THRESHOLD, drop['x'], drop['y'], "bottom")
-                    if not checkValueString(stack_size_string):
-                        logging.warning(f"Failed to get bottom stack count for {drop}, retrying with lower threshold")
-                        stack_size_string = getCharactersFromImage(bottom_line, character_templates, CHAR_THRESHOLD_LOOSE, drop['x'], drop['y'], "bottom")
 
-                    logging.debug(f"Raw string for bottom line at {drop['y']:3d}_{drop['x']:3d}: {stack_size_string}")
+                    stack_size_string = getCharactersFromImage(bottom_line, character_templates, CHAR_THRESHOLD, drop['x'], drop['y'], "bottom")
+                    logging.debug(f"{drop_identifier} | 1st try bottom: {stack_size_string}")
+
+                    if not checkValueString(stack_size_string):
+                        stack_size_string = getCharactersFromImage(bottom_line, character_templates, CHAR_THRESHOLD_LOOSE, drop['x'], drop['y'], "bottom")
+                        logging.debug(f"{drop_identifier} | 2nd try bottom: {stack_size_string}")
+
                     if checkValueString(stack_size_string):
                         drop['stack'] = get_stack_base(stack_size_string)
+                        logging.debug(f"{drop_identifier} | Bottom string : {drop['stack']}")
                     else:
-                        logging.error(f'Failed to get bottom stack count for {drop}')
+                        logging.error(f'{drop_identifier} | Failed to get bottom stack count')
                         drop['stack'] = -1
 
 
