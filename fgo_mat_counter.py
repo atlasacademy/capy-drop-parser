@@ -376,7 +376,7 @@ def load_template_images(settings, template_dir):
 def analyze_image_for_discord(image_path, settings, template_dir):
     try:
         settings = load_template_images(settings, template_dir)
-        with open(REFFOLDER / 'characters.json') as fp:
+        with open(os.path.join(REFFOLDER, "characters.json")) as fp:
             characters = json.load(fp)
             characters = load_template_images(characters, REFFOLDER)
             settings.extend(characters)
@@ -422,7 +422,7 @@ def run(image, debug=False, label=False):
         settings = json.load(fp)
     settings = load_template_images(settings, chosen_ref)
 
-    with open(REFFOLDER / 'characters.json') as fp:
+    with open(os.path.join(REFFOLDER, "characters.json")) as fp:
         characters = json.load(fp)
         characters = load_template_images(characters, REFFOLDER)
         settings.extend(characters)
