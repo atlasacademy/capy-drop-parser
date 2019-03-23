@@ -5,17 +5,16 @@
 # Thanks to: Officer Artoria, Yuki, Sigma, Snow and the folks of FGO Farmville for their help
 #################################################################################
 
-
-import cv2
-import numpy as np
 import os
 import time
 import argparse
 import logging
-import pytesseract
 import re
 import json
 import pathlib
+import pytesseract
+import cv2
+import numpy as np
 
 LABEL = False
 DEBUG = False
@@ -101,13 +100,13 @@ def getCharactersFromImage(matWindow, templates, threshold):
                     # print "old -> new: %s -> %s @ %s [ %f vs %f ] " % (oldCharName, charValue, cpt, oldCharScore, charScore)
 
     if LABEL:
-        for cpt in charPtList.keys():
+        for cpt in charPtList:
             cv2.rectangle(resultsImg, cpt, (cpt[0] + h, cpt[1] + w), (0, 0, 255), 1)
         cv2.imwrite(f'current_character_window.png', resultsImg)
 
     # finished evaluating characters, construct number representation of mats
     charValPositionList = []
-    for cpt in charPtList.keys():
+    for cpt in charPtList:
         (charValue, charScore) = charPtList[cpt]
         ccol = cpt[0]
         charValPositionList.append((ccol, charValue))
@@ -140,15 +139,13 @@ def checkValueString(valueString):
 
 
 def get_stack_sizes(image, mat_drops, templates):
-    mat_height = 104
-    mat_width = 95
     currencies = [template for template in templates if template["type"] == "currency"]
     character_templates = [template for template in templates if template["type"] == "character"]
     for drop in mat_drops:
         drop['stack'] = 0
         for currency in currencies:
             if drop['id'] == currency['id']:
-                character_image = image[drop['y'] + 55:drop['y'] + mat_height - 15, drop['x']:drop['x'] + mat_width]
+                character_image = image[drop['y'] + 55:drop['y'] + 89, drop['x']:drop['x'] + 95]
                 stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD)
                 if not checkValueString(stack_size_string):
                     logging.warning(f"Failed to get stack count for {drop}, retrying with lower threshold")
@@ -174,12 +171,12 @@ def countMats(targetImg, templates):
         countMat(targetImg, mat, ptList)
 
     drops = []
-    for pt in ptList.keys():
+    for pt in ptList:
         matName = ptList[pt][0]
         drop = {"id": matName, "x": pt[0], "y": pt[1], "score": ptList[pt][1]}
         drops.append(drop)
 
-    if len(drops) <= 0:
+    if not drops:
         logging.debug("No Mats Found.")
     else:
         logging.debug("Found mats:")
@@ -222,7 +219,7 @@ def crop_black_edges(targetImg):
         cv2.imwrite('gray.png', grayImg)
 
     _, thresh = cv2.threshold(grayImg, 70, 255, cv2.THRESH_BINARY)
-    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     height, width, _ = targetImg.shape
     min_x = width
     min_y = height
@@ -277,7 +274,7 @@ def get_qp(image):
 
 
 def get_scroll_bar_start_height(image):
-    height, width, _ = image.shape
+    _, width, _ = image.shape
     upper_left_x = width - 117
     gray_image = cv2.cvtColor(image[90:90 + 330, upper_left_x:upper_left_x + 30], cv2.COLOR_BGR2GRAY)
     _, binary = cv2.threshold(gray_image, 225, 255, cv2.THRESH_BINARY)
@@ -326,7 +323,7 @@ def analyze_image(image_path, templates, LABEL=False):
         targetImg = crop_side_and_bottom_blue_borders(targetImg)
 
     # refresh channels
-    height, width, channels = targetImg.shape
+    height, width, _ = targetImg.shape
 
     # print height, width
     wscale = (1.0 * width) / TRAINING_IMG_WIDTH
@@ -428,14 +425,14 @@ def run(image, debug=False, label=False):
         settings.extend(characters)
 
     logging.info("Running...")
-    results = analyze_image(image, settings, label)
+    img_results = analyze_image(image, settings, label)
 
     end = time.time()
     duration = end - start
 
     logging.info(f"Completed in {duration:.2f} seconds.")
-    logging.info(f"Result:\n{results}")
-    return results
+    logging.info(f"Result:\n{img_results}")
+    return img_results
 
 
 if __name__ == '__main__':
