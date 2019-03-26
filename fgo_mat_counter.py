@@ -17,7 +17,7 @@ import cv2
 import numpy as np
 
 LABEL = False
-DEBUG = False
+
 
 TRAINING_IMG_HEIGHT = 1080
 TRAINING_IMG_WIDTH = 1920
@@ -390,9 +390,7 @@ def run(image, debug=False, label=False):
     start = time.time()
 
     global LABEL
-    global DEBUG
     LABEL = label
-    DEBUG = debug
 
     logging.basicConfig(format='%(relativeCreated)6d %(threadName)s %(message)s',
                         level=logging.DEBUG,
