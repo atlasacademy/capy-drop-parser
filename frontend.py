@@ -17,7 +17,7 @@ import fgo_mat_counter
 TERMINATE = False
 SCRIPT_BASE_PATH = pathlib.Path(sys.argv[0]).parent
 
-def signal_handling():
+def signal_handling(signum, frame):
     global TERMINATE
     if TERMINATE:
         sys.exit(1)

@@ -16,9 +16,6 @@ import pytesseract
 import cv2
 import numpy as np
 
-LABEL = False
-
-
 TRAINING_IMG_HEIGHT = 1080
 TRAINING_IMG_WIDTH = 1920
 TRAINING_IMG_ASPECT_RATIO = float(TRAINING_IMG_WIDTH) / TRAINING_IMG_HEIGHT
@@ -72,12 +69,12 @@ def countMat(targetImg, template, ptList):
                 ptList[overLapPt] = (template['id'], score)
 
 
-def getCharactersFromImage(matWindow, templates, threshold):
+def getCharactersFromImage(matWindow, templates, threshold, label):
     charPtList = {}
 
     resultsImg = None
 
-    if LABEL:
+    if label:
         resultsImg = matWindow.copy()
 
     for char in templates:
@@ -99,7 +96,7 @@ def getCharactersFromImage(matWindow, templates, threshold):
                     charPtList[overlapCharPt] = (charValue, charScore)
                     # print "old -> new: %s -> %s @ %s [ %f vs %f ] " % (oldCharName, charValue, cpt, oldCharScore, charScore)
 
-    if LABEL:
+    if label:
         for cpt in charPtList:
             cv2.rectangle(resultsImg, cpt, (cpt[0] + h, cpt[1] + w), (0, 0, 255), 1)
         cv2.imwrite(f'current_character_window.png', resultsImg)
@@ -138,7 +135,7 @@ def checkValueString(valueString):
         return False
 
 
-def get_stack_sizes(image, mat_drops, templates):
+def get_stack_sizes(image, mat_drops, templates, label):
     currencies = [template for template in templates if template["type"] == "currency"]
     character_templates = [template for template in templates if template["type"] == "character"]
     for drop in mat_drops:
@@ -146,10 +143,10 @@ def get_stack_sizes(image, mat_drops, templates):
         for currency in currencies:
             if drop['id'] == currency['id']:
                 character_image = image[drop['y'] + 55:drop['y'] + 89, drop['x']:drop['x'] + 95]
-                stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD)
+                stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD, label)
                 if not checkValueString(stack_size_string):
                     logging.warning(f"Failed to get stack count for {drop}, retrying with lower threshold")
-                    stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD_LOOSE)
+                    stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD_LOOSE, label)
 
                 logging.debug(f'Raw string from character matching: {stack_size_string}')
                 if checkValueString(stack_size_string):
@@ -159,10 +156,10 @@ def get_stack_sizes(image, mat_drops, templates):
                     drop['stack'] = -1
 
 
-def countMats(targetImg, templates):
+def countMats(targetImg, templates, label):
     # Crop image to just include the mat window
     targetImg = targetImg[80:80 + 360, 115:115 + 810]
-    if LABEL:
+    if label:
         cv2.imwrite('just_mats.png', targetImg)
 
     # search and mark target img for mat templates
@@ -186,36 +183,36 @@ def countMats(targetImg, templates):
     # Detecting stack size is called here because cropping to just the stack size text based on the mat location needs
     # needs to be done with the cropped version of the image the mats were detected in for the location to remain
     # accurate.
-    get_stack_sizes(targetImg, drops, templates)
+    get_stack_sizes(targetImg, drops, templates, label)
 
     return drops
 
 
-def crop_top_bottom_blue_borders(image):
+def crop_top_bottom_blue_borders(image, label):
     height, width, _ = image.shape
     new_height = width / TRAINING_IMG_ASPECT_RATIO
     adjustment = int((height - new_height) / 2)
 
     image = image[adjustment:height - adjustment, 0:width]
-    if LABEL:
+    if label:
         cv2.imwrite('post_1.3_ratio_crop.png', image)
 
     return image
 
 
-def crop_side_and_bottom_blue_borders(image):
+def crop_side_and_bottom_blue_borders(image, label):
     height, width, _ = image.shape
     image = image[0:height - 60, 275:width - 275]
-    if LABEL:
+    if label:
         cv2.imwrite('post_2.1_ratio_crop.png', image)
 
     return image
 
 
-def crop_black_edges(targetImg):
+def crop_black_edges(targetImg, label):
     # cut all black edges, credit https://stackoverflow.com/questions/13538748/crop-black-edges-with-opencv
     grayImg = cv2.cvtColor(targetImg, cv2.COLOR_BGR2GRAY)
-    if LABEL:
+    if label:
         cv2.imwrite('gray.png', grayImg)
 
     _, thresh = cv2.threshold(grayImg, 70, 255, cv2.THRESH_BINARY)
@@ -231,7 +228,7 @@ def crop_black_edges(targetImg):
         min_y, max_y = min(y, min_y), max(y + h, max_y)
 
     targetImg = targetImg[min_y:max_y, min_x:max_x]
-    if LABEL:
+    if label:
         cv2.imwrite('post_black_crop.png', targetImg)
 
     return targetImg
@@ -249,20 +246,20 @@ def get_qp_from_text(text):
     return qp
 
 
-def extract_text_from_image(image, file_name='pytesseract_input.png'):
+def extract_text_from_image(label, image, file_name='pytesseract_input.png'):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     _, qp_image = cv2.threshold(gray, 65, 255, cv2.THRESH_BINARY_INV)
 
-    if LABEL:
+    if label:
         cv2.imwrite(file_name, qp_image)
 
     return pytesseract.image_to_string(qp_image, config='-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=,0123456789')
 
 
-def get_qp(image):
-    qp_gained_text = extract_text_from_image(image[435:430 + 47, 348:348 + 311], 'qp_gained_text.png')
+def get_qp(image, label):
+    qp_gained_text = extract_text_from_image(label, image[435:430 + 47, 348:348 + 311], 'qp_gained_text.png')
     logging.debug(f'QP gained text: {qp_gained_text}')
-    qp_total_text = extract_text_from_image(image[481:481 + 38, 212:212 + 282], 'qp_total_text.png')
+    qp_total_text = extract_text_from_image(label, image[481:481 + 38, 212:212 + 282], 'qp_total_text.png')
     logging.debug(f'QP total text: {qp_total_text}')
     qp_gained = get_qp_from_text(qp_gained_text)
     qp_total = get_qp_from_text(qp_total_text)
@@ -273,12 +270,12 @@ def get_qp(image):
     return qp_gained, qp_total
 
 
-def get_scroll_bar_start_height(image):
+def get_scroll_bar_start_height(image, label):
     _, width, _ = image.shape
     upper_left_x = width - 117
     gray_image = cv2.cvtColor(image[90:90 + 330, upper_left_x:upper_left_x + 30], cv2.COLOR_BGR2GRAY)
     _, binary = cv2.threshold(gray_image, 225, 255, cv2.THRESH_BINARY)
-    if LABEL:
+    if label:
         cv2.imwrite('scroll_bar_binary.png', binary)
     _, template = cv2.threshold(cv2.imread(os.path.join(REFFOLDER, 'scroll_bar_upper.png'), cv2.IMREAD_GRAYSCALE), 225, 255, cv2.THRESH_BINARY)
     res = cv2.matchTemplate(binary, template, cv2.TM_CCOEFF_NORMED)
@@ -291,16 +288,16 @@ def get_aspect_ratio(image):
     return float(width) / height
 
 
-def get_drop_count(image):
+def get_drop_count(image, label):
     try:
-        text = extract_text_from_image(image[0:0 + 35, 806:806 + 40], 'drop_count_text.png')
+        text = extract_text_from_image(label, image[0:0 + 35, 806:806 + 40], 'drop_count_text.png')
         logging.debug(f'Drop count text: {text}')
         return int(re.search("([0-9]+)", text).group(1))
     except:
         return -1
 
 
-def analyze_image(image_path, templates, LABEL=False):
+def analyze_image(image_path, templates, label=False):
     if not os.path.isfile(image_path):
         raise Exception(f'{image_path} does not exist')
 
@@ -312,15 +309,15 @@ def analyze_image(image_path, templates, LABEL=False):
     aspect_ratio = get_aspect_ratio(targetImg)
     logging.debug(f'Input aspect ratio is {aspect_ratio:.4f}, training ratio is {TRAINING_IMG_ASPECT_RATIO:.4f}')
     if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) > 0.1:
-        targetImg = crop_black_edges(targetImg)
+        targetImg = crop_black_edges(targetImg, label)
 
     # Aspect ratio of 1.3 causes FGO to add blue borders on the top and bottom
     if abs(1.3 - get_aspect_ratio(targetImg)) < 0.1:
-        targetImg = crop_top_bottom_blue_borders(targetImg)
+        targetImg = crop_top_bottom_blue_borders(targetImg, label)
 
     # Aspect ratio of 2.165 causes FGO to add blue borders to both sides and the bottom; at least on some devices.
     if abs(2.165 - get_aspect_ratio(targetImg)) < 0.1:
-        targetImg = crop_side_and_bottom_blue_borders(targetImg)
+        targetImg = crop_side_and_bottom_blue_borders(targetImg, label)
 
     # refresh channels
     height, width, _ = targetImg.shape
@@ -342,13 +339,13 @@ def analyze_image(image_path, templates, LABEL=False):
         logging.debug(line)
         targetImg = cv2.resize(targetImg, (0, 0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_AREA)
 
-    if LABEL:
+    if label:
         cv2.imwrite('resized.png', targetImg)
 
-    mat_drops = countMats(targetImg, templates)
-    qp_gained, qp_total = get_qp(targetImg)
-    scroll_position = get_scroll_bar_start_height(targetImg)
-    drop_count = get_drop_count(targetImg)
+    mat_drops = countMats(targetImg, templates, label)
+    qp_gained, qp_total = get_qp(targetImg, label)
+    scroll_position = get_scroll_bar_start_height(targetImg, label)
+    drop_count = get_drop_count(targetImg, label)
     return {"qp_gained": qp_gained, "qp_total": qp_total, 'scroll_position': scroll_position, "drop_count": drop_count, "drops_found": len(mat_drops), "drops": mat_drops}
 
 
@@ -388,9 +385,6 @@ def analyze_image_for_discord(image_path, settings, template_dir):
 
 def run(image, debug=False, label=False):
     start = time.time()
-
-    global LABEL
-    LABEL = label
 
     logging.basicConfig(format='%(relativeCreated)6d %(threadName)s %(message)s',
                         level=logging.DEBUG,
