@@ -427,7 +427,7 @@ def run(image, debug=False, verbose=False):
     duration = end - start
 
     logging.info(f"Completed in {duration:.2f} seconds.")
-
+    logging.info(f"{img_results}")
     return img_results
 
 
@@ -443,7 +443,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     results = run(args.image, args.debug, args.verbose)
-    print(results)
+    if not (args.verbose or args.debug):
+        print(results)
     # with open(REFFOLDER / 'settings.json') as fp:
     #     settings = json.load(fp)
     # settings = load_template_images(settings, REFFOLDER)
