@@ -8,7 +8,7 @@ import fgo_mat_counter
 
 
 DEBUG = False
-LABEL = True
+VERBOSE = False
 
 def remove_scores(dictionary):
     for drop in dictionary['drops']:
@@ -67,7 +67,7 @@ class TestEvents(unittest.TestCase):
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'da_vinci.png')
         expected = prepare_for_comparison(expected)
-        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
     def test_christmas_2018(self):
@@ -87,7 +87,7 @@ class TestEvents(unittest.TestCase):
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'christmas_2018.png')
         expected = prepare_for_comparison(expected)
-        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
     @unittest.skipUnless(os.path.isdir(os.path.join(os.getcwd(), 'test_data', 'xmas_2018_expert_revo')), 'requries test data for 2018 christmas expert node')
@@ -222,7 +222,7 @@ class TestEvents(unittest.TestCase):
         base_path = os.path.join(os.getcwd(), 'test_data', 'xmas_2018_expert_revo')
         for file in expected.keys():
             expected_result = prepare_for_comparison(expected[file])
-            result = prepare_for_comparison(fgo_mat_counter.run(os.path.join(base_path, file), DEBUG, LABEL))
+            result = prepare_for_comparison(fgo_mat_counter.run(os.path.join(base_path, file), DEBUG, VERBOSE))
             self.assertEqual(expected_result, result)
 
     def test_valentine_2019_expert_knights(self):
@@ -250,7 +250,7 @@ class TestEvents(unittest.TestCase):
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'valentine_2019_expert_knight.png')
         expected = prepare_for_comparison(expected)
-        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
 
@@ -263,7 +263,7 @@ class TestSpecialCases(unittest.TestCase):
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'samsung_s9_red_filter_43_percent.jpg')
         expected = prepare_for_comparison(expected)
-        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
     def test_blue_and_black_borders(self):
@@ -274,7 +274,7 @@ class TestSpecialCases(unittest.TestCase):
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'black_and_blue_border.jpg')
         expected = prepare_for_comparison(expected)
-        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
     def test_blue_and_black_borders_light_background(self):
@@ -285,7 +285,7 @@ class TestSpecialCases(unittest.TestCase):
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'black_and_blue_border_light_bg.jpg')
         expected = prepare_for_comparison(expected)
-        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
     def test_side_bottom_blue_border(self):
@@ -315,7 +315,7 @@ class TestSpecialCases(unittest.TestCase):
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'side_bottom_blue_borders.png')
         expected = prepare_for_comparison(expected)
-        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
     def test_touch_mark(self):
@@ -340,29 +340,29 @@ class TestSpecialCases(unittest.TestCase):
 
 
         test_image = pathlib.Path(__file__).parent / 'test_data' / 'touch_mark.png'
-        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, LABEL))
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
 
 class TestScrollBarLocation(unittest.TestCase):
     def test_scroll_at_top(self):
         test_image = os.path.join(os.getcwd(), 'test_data', 'da_vinci.png')
-        res = fgo_mat_counter.run(test_image, DEBUG, LABEL)
+        res = fgo_mat_counter.run(test_image, DEBUG, VERBOSE)
         self.assertNotEqual(-1, res['scroll_position'])
 
     def test_scroll_at_top2(self):
         test_image = os.path.join(os.getcwd(), 'test_data', 'Screenshot_20181205-153908_Fate_GO.jpg')
-        res = fgo_mat_counter.run(test_image, DEBUG, LABEL)
+        res = fgo_mat_counter.run(test_image, DEBUG, VERBOSE)
         self.assertNotEqual(-1, res['scroll_position'])
 
     def test_no_scroll_bar(self):
         test_image = os.path.join(os.getcwd(), 'test_data', 'black_and_blue_border.jpg')
-        res = fgo_mat_counter.run(test_image, DEBUG, LABEL)
+        res = fgo_mat_counter.run(test_image, DEBUG, VERBOSE)
         self.assertEqual(-1, res['scroll_position'])
 
     def test_scroll_bar_at_bottom(self):
         test_image = os.path.join(os.getcwd(), 'test_data', 'scrolled_down.png')
-        res = fgo_mat_counter.run(test_image, DEBUG, LABEL)
+        res = fgo_mat_counter.run(test_image, DEBUG, VERBOSE)
         self.assertLess(5, res['scroll_position'])
 
 
