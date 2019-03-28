@@ -120,11 +120,11 @@ def getCharactersFromImage(matWindow, templates, threshold):
 
 
 def get_stack_base(valueString):
-    matches = re.search('x([0-9]+)', valueString)
-    if matches is None or matches.group(1) is None:
+    matches = re.search(r'(x|\+)([0-9]+)', valueString)
+    if matches is None or matches.group(2) is None:
         raise Exception('Failed to find base stack size')
 
-    return int(matches.group(1))
+    return int(matches.group(2))
 
 
 def checkValueString(valueString):
