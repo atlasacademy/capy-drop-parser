@@ -122,7 +122,7 @@ def getCharactersFromImage(matWindow, templates, threshold, x, y, pos):
 
 def get_stack_base(valueString):
     matches = re.search(r'(x|\+)([0-9]+)', valueString)
-    if matches is None or matches.group(2) is None:
+    if matches is None or matches.group(2) is None or int(matches.group(2)) == 0:
         raise Exception('Failed to find base stack size')
 
     return int(matches.group(2))
@@ -137,7 +137,7 @@ def checkValueString(valueString):
 
 def get_stack_base_top(valueString):
     matches = re.search(r'(x|\+)([0-9]+)', valueString)
-    if matches is None or matches.group(2) is None:
+    if matches is None or matches.group(2) is None or int(matches.group(2)) == 0:
         raise Exception('Failed to find base stack size')
 
     return int(matches.group(2))
@@ -154,10 +154,10 @@ def get_stack_sizes(image, mat_drops, templates):
     character_templates = [template for template in templates if template["type"] == "character"]
     for drop in mat_drops:
         drop['stack'] = 0
+        drop_identifier = f"{drop['y']:3d}_{drop['x']:3d}"
         for currency in currencies:
             if drop['id'] == currency['id']:
                 top_line = image[drop['y']+40:drop['y']+69, drop['x']+7:drop['x']+88]
-                drop_identifier = f"{drop['y']:3d}_{drop['x']:3d}"
 
                 top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD, drop['x'], drop['y'], "atop")
                 logging.info(f"{drop_identifier} | 1st try top   : {top_stack_size_string}")
@@ -196,7 +196,7 @@ def countMats(targetImg, templates):
 
     # search and mark target img for mat templates
     ptList = {}
-    for mat in [template for template in templates if template["type"] == "material" or template["type"] == "currency"]:
+    for mat in [template for template in templates if template["type"] in ["material", "currency"]]:
         countMat(targetImg, mat, ptList)
 
     drops = []
