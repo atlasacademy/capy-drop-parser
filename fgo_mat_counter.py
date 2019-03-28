@@ -434,9 +434,9 @@ def run(image, debug=False, verbose=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="Helper Script that uses basic image recognition via opencv to count mat drops in FGO Screenshots")
-    parser.add_argument('-v', '--verbose', action='store_true', help="Enables printing of debug messages")
+    parser.add_argument('-v', '--verbose', action='store_true', help="Enables printing info level messages")
     parser.add_argument('-d', '--debug', action='store_true',
-                        help="Used for debugging - makes debug images with identified characters in red boxes")
+                        help="Enables printing debug level messages and creation of temporary images useful for debug")
     parser.add_argument('-nc', '--nocharSearch', action='store_true', default=False,
                         help="Disable search and labeling for characters in images (improves performance outside events)")
     parser.add_argument('-i', '--image', help='Image to process')
@@ -445,10 +445,3 @@ if __name__ == '__main__':
     results = run(args.image, args.debug, args.verbose)
     if not (args.verbose or args.debug):
         print(results)
-    # with open(REFFOLDER / 'settings.json') as fp:
-    #     settings = json.load(fp)
-    # settings = load_template_images(settings, REFFOLDER)
-    # for template in settings:
-    #     if template['type'] == 'currency' or template['type'] == 'material':
-    #         h, w, _ = template['image'].shape
-    #         cv2.imwrite(str((REFFOLDER / f'{template["id"]}')), template['image'][15:h, 0:w])
