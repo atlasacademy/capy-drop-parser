@@ -160,20 +160,25 @@ def get_stack_sizes(image, mat_drops, templates):
 
         for currency in currencies:
             if drop['id'] == currency['id']:
-                top_line = image[drop['y']+40:drop['y']+69, drop['x']+7:drop['x']+92]
+                top_line_parse_success = True
+                if currency.get("wrapable", False):
+                    top_line = image[drop['y']+40:drop['y']+69, drop['x']+7:drop['x']+92]
 
-                top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD, drop_x, drop_y, "atop")
-                logging.info(f"{drop_id} | 1st try top   : {top_stack_size_string}")
+                    top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD, drop_x, drop_y, "atop")
+                    logging.info(f"{drop_id} | 1st try top   : {top_stack_size_string}")
 
-                if not checkValueStringTop(top_stack_size_string):
-                    top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD_LOOSE, drop_x, drop_y, "atop")
-                    logging.info(f"{drop_id} | 2nd try top   : {top_stack_size_string}")
+                    if not checkValueStringTop(top_stack_size_string):
+                        top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD_LOOSE, drop_x, drop_y, "atop")
+                        logging.info(f"{drop_id} | 2nd try top   : {top_stack_size_string}")
 
-                if checkValueStringTop(top_stack_size_string):
-                    drop['stack'] = get_stack_base_top(top_stack_size_string)
-                    logging.info(f"{drop_id} > Top string    : {drop['stack']}")
-                else:
-                    logging.info(f'{drop_id} | Failed to get top stack count')
+                    if checkValueStringTop(top_stack_size_string):
+                        drop['stack'] = get_stack_base_top(top_stack_size_string)
+                        logging.info(f"{drop_id} > Top string    : {drop['stack']}")
+                    else:
+                        logging.info(f'{drop_id} | Failed to get top stack count')
+                        top_line_parse_success = False
+
+                if not currency.get("wrapable", False) or not top_line_parse_success:
                     bottom_line = image[drop['y']+61:drop['y']+89, drop['x']+7:drop['x']+95]
 
                     stack_size_string = getCharactersFromImage(bottom_line, character_templates, CHAR_THRESHOLD, drop_x, drop_y, "bottom")
