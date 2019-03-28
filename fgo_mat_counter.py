@@ -160,7 +160,7 @@ def get_stack_sizes(image, mat_drops, templates):
 
         for currency in currencies:
             if drop['id'] == currency['id']:
-                top_line = image[drop['y']+40:drop['y']+69, drop['x']+7:drop['x']+88]
+                top_line = image[drop['y']+40:drop['y']+69, drop['x']+7:drop['x']+92]
 
                 top_stack_size_string = getCharactersFromImage(top_line, character_templates, CHAR_THRESHOLD, drop_x, drop_y, "atop")
                 logging.info(f"{drop_id} | 1st try top   : {top_stack_size_string}")
