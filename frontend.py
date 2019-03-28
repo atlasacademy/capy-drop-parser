@@ -17,15 +17,15 @@ import fgo_mat_counter
 TERMINATE = False
 SCRIPT_BASE_PATH = pathlib.Path(sys.argv[0]).parent
 
-def signal_handling(signum,frame):
+def signal_handling(*_):
     global TERMINATE
-    if TERMINATE == True:
+    if TERMINATE:
         sys.exit(1)
     TERMINATE = True
     print(f'Notice: app may take up to polling frequency time and however long it takes to finish the queue before exting.')
 
 
-signal.signal(signal.SIGINT,signal_handling)
+signal.signal(signal.SIGINT, signal_handling)
 
 def get_node_directories():
     node_dirs = []
@@ -38,8 +38,8 @@ def get_node_directories():
 
 def check_dirs_for_new_images(dir_list):
     work_items = []
-    for dir in dir_list:
-        for f in pathlib.Path(dir).iterdir():
+    for folder in dir_list:
+        for f in pathlib.Path(folder).iterdir():
             if f.is_file() and imghdr.what(f) is not None:
                 new_path = SCRIPT_BASE_PATH / 'output' / f.parts[-2] / f.name
                 if not os.path.exists(new_path.parent):
@@ -70,12 +70,12 @@ def convert_score_to_float_for_json(drops):
 def create_result_json_file(result):
     image_path = pathlib.Path(result['image_path'])
     json_file_path = image_path.parent / (image_path.stem + '.json')
-    with open(json_file_path, 'w') as fp:
-        json.dump(result, fp, indent=4)
+    with open(json_file_path, 'w') as f:
+        json.dump(result, f, indent=4)
 
 
 def handle_success(result):
-    if result['matched'] == True:
+    if result['matched']:
         result['drops'] = normalize_drop_locations(result['drops'])
         result['drops'] = convert_score_to_float_for_json(result['drops'])
         result['drops'].sort(key=operator.itemgetter('y', 'x'))
@@ -95,7 +95,8 @@ if __name__ == '__main__':
     arg_parser.add_argument('-p', '--polling_frequency', required=False, default=60, help='how often to check for new images in seconds')
     args = arg_parser.parse_args()
 
-    logging.basicConfig(format='%(relativeCreated)6d %(threadName)s %(message)s', level=logging.ERROR,
+    logging.basicConfig(format='%(relativeCreated)6d %(threadName)s %(message)s',
+                        level=logging.ERROR,
                         filename='logfile.log',
                         filemode='w')
     logging.getLogger('').addHandler(logging.StreamHandler())
@@ -104,7 +105,8 @@ if __name__ == '__main__':
 
     while not TERMINATE:
         for wi in check_dirs_for_new_images(get_node_directories()):
-            with open(SCRIPT_BASE_PATH / 'input' / wi.parts[-2] / 'settings.json') as fp: settings = json.load(fp)
+            with open(SCRIPT_BASE_PATH / 'input' / wi.parts[-2] / 'settings.json') as fp:
+                settings = json.load(fp)
             process_pool.apply_async(fgo_mat_counter.analyze_image_for_discord,
                                      [wi, settings, SCRIPT_BASE_PATH / 'input'/ wi.parts[-2] / 'files'],
                                      {}, handle_success, handle_failure)
@@ -116,4 +118,3 @@ if __name__ == '__main__':
     process_pool.close()
     process_pool.join()
     print('done')
-
