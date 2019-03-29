@@ -56,8 +56,8 @@ def check_dirs_for_new_images(dir_list):
 
 def normalize_drop_locations(drops):
     for drop in drops:
-        drop['y'] = int(drop['y'] / 100)
-        drop['x'] = int(drop['x'] / 100)
+        drop['y'] = int(drop['y'] / 110)
+        drop['x'] = int((drop['x'] - 50) / 110)
 
     return drops
 

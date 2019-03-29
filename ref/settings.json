@@ -310,5 +310,21 @@
   {
     "id": "valentine_2019_rider_coin.png",
     "type": "currency"
+  },
+  {
+    "id": "guda2_shinsengumi_point.png",
+    "type": "currency"
+  },
+  {
+    "id": "guda2_gold_currency.png",
+    "type": "currency"
+  },
+  {
+    "id": "guda2_silver_currency.png",
+    "type": "currency"
+  },
+  {
+    "id": "guda2_bronze_currency.png",
+    "type": "currency"
   }
 ]

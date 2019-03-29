@@ -15,9 +15,12 @@ import pathlib
 import pytesseract
 import cv2
 import numpy as np
+import sys
+import heapq
+
 
 TRAINING_IMG_HEIGHT = 1080
-TRAINING_IMG_WIDTH = 1920
+TRAINING_IMG_WIDTH = 1650
 TRAINING_IMG_ASPECT_RATIO = float(TRAINING_IMG_WIDTH) / TRAINING_IMG_HEIGHT
 TRAINING_IMG_MAT_SCALE = 0.54
 MIN_DISTANCE = 50
@@ -156,16 +159,17 @@ def get_stack_sizes(image, mat_drops, templates):
                     drop['stack'] = -1
 
 
-def countMats(targetImg, templates):
-    # Crop image to just include the mat window
-    targetImg = targetImg[80:80 + 360, 115:115 + 810]
+def countMats(mat_drops_window, templates):
+    #Crop image to just include the mat window
+    mat_drops_window = mat_drops_window[80:80 + 400, 0:980]
     if logging.getLogger().isEnabledFor(logging.DEBUG):
-        cv2.imwrite('just_mats.png', targetImg)
+        cv2.imwrite('just_mats.png', mat_drops_window)
 
     # search and mark target img for mat templates
     ptList = {}
     for mat in [template for template in templates if template["type"] == "material" or template["type"] == "currency"]:
-        countMat(targetImg, mat, ptList)
+        countMat(mat_drops_window, mat, ptList)
+
 
     drops = []
     for pt in ptList:
@@ -183,56 +187,9 @@ def countMats(targetImg, templates):
     # Detecting stack size is called here because cropping to just the stack size text based on the mat location needs
     # needs to be done with the cropped version of the image the mats were detected in for the location to remain
     # accurate.
-    get_stack_sizes(targetImg, drops, templates)
+    get_stack_sizes(mat_drops_window, drops, templates)
 
     return drops
-
-
-def crop_top_bottom_blue_borders(image):
-    height, width, _ = image.shape
-    new_height = width / TRAINING_IMG_ASPECT_RATIO
-    adjustment = int((height - new_height) / 2)
-
-    image = image[adjustment:height - adjustment, 0:width]
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
-        cv2.imwrite('post_1.3_ratio_crop.png', image)
-
-    return image
-
-
-def crop_side_and_bottom_blue_borders(image):
-    height, width, _ = image.shape
-    image = image[0:height - 60, 275:width - 275]
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
-        cv2.imwrite('post_2.1_ratio_crop.png', image)
-
-    return image
-
-
-def crop_black_edges(targetImg):
-    # cut all black edges, credit https://stackoverflow.com/questions/13538748/crop-black-edges-with-opencv
-    grayImg = cv2.cvtColor(targetImg, cv2.COLOR_BGR2GRAY)
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
-        cv2.imwrite('gray.png', grayImg)
-
-    _, thresh = cv2.threshold(grayImg, 70, 255, cv2.THRESH_BINARY)
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    height, width, _ = targetImg.shape
-    min_x = width
-    min_y = height
-    max_x = 0
-    max_y = 0
-    for cnt in contours:
-        x, y, w, h = cv2.boundingRect(cnt)
-        min_x, max_x = min(x, min_x), max(x + w, max_x)
-        min_y, max_y = min(y, min_y), max(y + h, max_y)
-
-    targetImg = targetImg[min_y:max_y, min_x:max_x]
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
-        cv2.imwrite('post_black_crop.png', targetImg)
-
-    return targetImg
-
 
 def get_qp_from_text(text):
     qp = 0
@@ -271,9 +228,8 @@ def get_qp(image):
 
 
 def get_scroll_bar_start_height(image):
-    _, width, _ = image.shape
-    upper_left_x = width - 117
-    gray_image = cv2.cvtColor(image[90:90 + 330, upper_left_x:upper_left_x + 30], cv2.COLOR_BGR2GRAY)
+    height, width, _ = image.shape
+    gray_image = cv2.cvtColor(image[90:90 + 330, width - 50:width], cv2.COLOR_BGR2GRAY)
     _, binary = cv2.threshold(gray_image, 225, 255, cv2.THRESH_BINARY)
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         cv2.imwrite('scroll_bar_binary.png', binary)
@@ -290,14 +246,143 @@ def get_aspect_ratio(image):
 
 def get_drop_count(image):
     try:
-        text = extract_text_from_image(image[0:0 + 35, 806:806 + 40], 'drop_count_text.png')
+        text = extract_text_from_image(image[5:5 + 28, 731:731 + 40], 'drop_count_text.png')
         logging.info(f'Drop count text: {text}')
         return int(re.search("([0-9]+)", text).group(1))
     except:
         return -1
 
 
-def analyze_image(image_path, templates=False):
+def get_bounding_rectangle_for_all_contours(contours):
+    min_x = min_y = sys.maxsize
+    max_x = max_y = 0
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        min_x, max_x = min(x, min_x), max(x + w, max_x)
+        min_y, max_y = min(y, min_y), max(y + h, max_y)
+
+    return (min_x, min_y, max_x - min_x, max_y - min_y)
+
+
+def find_side_edges(image):
+    # This attempts to find the white border of the drop window within the input image.
+    # The concept is that the vertical white borders will be one of the edges that transition from light to dark (left border)
+    # or from dark to light (right border). Since the borders are brighter than their surroundings we look for columns
+    # with an average "brightness" larger than the average of columns around it.
+
+    class Edge:
+        # Edge direction is defined as being from light to dark
+        def __init__(self, location, raw_value, relative_value, direction):
+            self.location = location
+            self.raw_value = raw_value
+            self.relative_value = relative_value
+            self.direction = direction
+
+    column_sums = []
+    image_height, image_width = image.shape
+    for column in range(0, int(image_width/3)):
+        pair = 0
+        for row in range(0, image_height):
+            pair += image[row, column]
+
+        heapq.heappush(column_sums, (column, pair))
+
+    for column in range(int((image_width/3)*2), image_width):
+        pair = 0
+        for row in range(0, image_height):
+            pair += image[row, column]
+
+        heapq.heappush(column_sums, (column, pair))
+
+    def detect_vertical_edges(column_sums, threshold):
+        edges = []
+        for index, pair in enumerate(column_sums):
+            window_size = 10
+            li = max(index - window_size, 0)
+            ri = min(index + window_size, len(column_sums) - 1)
+            if pair[0] - column_sums[li][0] > window_size or column_sums[ri][0] - pair[0] > window_size: continue
+            if pair[0] < image_width/3:
+                # Look for transition from light to dark
+                rc = [x[1] for x in column_sums[index + 1:ri]]
+                if len(rc) < 1: continue
+                average = sum(rc) / len(rc)
+                if pair[1] - average > threshold: edges.append(Edge(pair[0], pair[1], pair[1] - average, 'right'))
+            else:
+                # Look for transition from dark to light
+                lc = [x[1] for x in column_sums[li:index]]
+                if len(lc) < 1: continue
+                average = sum(lc) / len(lc)
+                if pair[1] - average > threshold: edges.append(Edge(pair[0], pair[1], pair[1] - average, 'left'))
+
+        return edges
+
+    def reduce_consecutive_edges(edges):
+        if len(edges) < 2: return edges
+        nl = []
+        edges.sort(key=lambda x: x.location)
+        merged_edge = edges[0]
+        offset = 1
+        for edge in edges[1:]:
+            if merged_edge.location + offset != edge.location:
+                nl.append(merged_edge)
+                merged_edge = edge
+                offset = 1
+            elif merged_edge.relative_value < edge.relative_value:
+                merged_edge = edge
+                offset = 1
+            else: offset += 1
+
+        nl.append(merged_edge)
+        return nl
+
+    def find_edge(column_sums):
+        threshold = 100000
+        edges = reduce_consecutive_edges(detect_vertical_edges(column_sums, threshold))
+        while len(edges) < 1 and threshold > 0:
+            threshold -= 10000
+            edges = reduce_consecutive_edges(detect_vertical_edges(column_sums, threshold))
+        return edges
+
+    left_edges = find_edge([x for x in column_sums if x[0] < image_width/3])
+    right_edges = find_edge([x for x in column_sums if x[0] > image_width/3])
+    if len(left_edges) < 1: raise Exception("Could not find left edge.")
+    if len(right_edges) < 1: raise Exception("Could not find right edge.")
+
+    left_edge = heapq.nsmallest(1, filter(lambda x: x.direction == 'right', left_edges), lambda x: x.location)[0].location
+    right_edge = heapq.nlargest(1, filter(lambda x: x.direction == 'left', right_edges), lambda x: x.location)[0].location
+    return left_edge, right_edge
+
+
+def extract_game_screen(image):
+    # Step 1: Attempt to find the left and right sides of the drop window.
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    game_screen_x, right_edge = find_side_edges(gray_image)
+    game_screen_width = right_edge - game_screen_x
+
+    # Step 2: Calculate expected height of game screen based on the expected aspect ratio.
+    expected_game_screen_aspect_ratio = 1.5277777778
+    expected_game_screen_height = int(round(game_screen_width / expected_game_screen_aspect_ratio, 0))
+    image_height, image_width, _ = image.shape
+    # If the expect height is close enough to the actual height there probably isn't any top/botttom border.
+    if abs(expected_game_screen_height - image_height) < 35: expected_game_screen_height = image_height
+    _, binary_image = cv2.threshold(gray_image, 120, 255, cv2.THRESH_BINARY)
+    if logging.getLogger().isEnabledFor(logging.DEBUG): cv2.imwrite('vertical_boundaries.png', binary_image)
+    contours, _ = cv2.findContours(binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    _, detected_y, _, _ = get_bounding_rectangle_for_all_contours(contours)
+    # If the detected top is within some range of the top of input image we assume there is no top border.
+    if detected_y < 35:
+        game_screen = image[0:expected_game_screen_height, game_screen_x:game_screen_x + game_screen_width]
+    else:
+        image_height, image_width, _ = image.shape
+        height_adjustment = int(abs(image_height - expected_game_screen_height) / 2)
+        game_screen = image[height_adjustment:image_height - height_adjustment,
+                      game_screen_x:game_screen_x + game_screen_width]
+
+    if logging.getLogger().isEnabledFor(logging.DEBUG): cv2.imwrite('game_screen.png', game_screen)
+    return game_screen
+
+
+def analyze_image(image_path, templates):
     if not os.path.isfile(image_path):
         raise Exception(f'{image_path} does not exist')
 
@@ -305,24 +390,8 @@ def analyze_image(image_path, templates=False):
     if targetImg is None:
         raise Exception(f'{image_path} returned None from imread')
 
-    # check if image H W ratio is off
-    aspect_ratio = get_aspect_ratio(targetImg)
-    logging.info(f'Input aspect ratio is {aspect_ratio:.4f}, training ratio is {TRAINING_IMG_ASPECT_RATIO:.4f}')
-    if abs(aspect_ratio - TRAINING_IMG_ASPECT_RATIO) > 0.1:
-        targetImg = crop_black_edges(targetImg)
-
-    # Aspect ratio of 1.3 causes FGO to add blue borders on the top and bottom
-    if abs(1.3 - get_aspect_ratio(targetImg)) < 0.1:
-        targetImg = crop_top_bottom_blue_borders(targetImg)
-
-    # Aspect ratio of 2.165 causes FGO to add blue borders to both sides and the bottom; at least on some devices.
-    if abs(2.165 - get_aspect_ratio(targetImg)) < 0.1:
-        targetImg = crop_side_and_bottom_blue_borders(targetImg)
-
-    # refresh channels
-    height, width, _ = targetImg.shape
-
-    # print height, width
+    game_screen = extract_game_screen(targetImg)
+    height, width, _ = game_screen.shape
     wscale = (1.0 * width) / TRAINING_IMG_WIDTH
     hscale = (1.0 * height) / TRAINING_IMG_HEIGHT
     scale = min(wscale, hscale)
@@ -331,22 +400,20 @@ def analyze_image(image_path, templates=False):
     if resizeScale > 1:
         matImgResize = 1 / resizeScale
         line = f"Too small, resizing targetImage with {matImgResize:.2f}"
-        targetImg = cv2.resize(targetImg, (0, 0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_CUBIC)
-        logging.info(line)
-
+        game_screen = cv2.resize(game_screen, (0,0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_CUBIC)
+        logging.debug(line)
     else:
         line = f"Too big, resizing targetImage with {resizeScale:.2f}"
-        logging.info(line)
-        targetImg = cv2.resize(targetImg, (0, 0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_AREA)
+        logging.debug(line)
+        game_screen = cv2.resize(game_screen, (0,0), fx=resizeScale, fy=resizeScale, interpolation=cv2.INTER_AREA)
 
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
-        cv2.imwrite('resized.png', targetImg)
+    if logging.getLogger().isEnabledFor(logging.DEBUG): cv2.imwrite('resized.png',game_screen)
 
-    mat_drops = countMats(targetImg, templates)
-    qp_gained, qp_total = get_qp(targetImg)
-    scroll_position = get_scroll_bar_start_height(targetImg)
-    drop_count = get_drop_count(targetImg)
-    return {"qp_gained": qp_gained, "qp_total": qp_total, 'scroll_position': scroll_position, "drop_count": drop_count, "drops_found": len(mat_drops), "drops": mat_drops}
+    mat_drops = countMats(game_screen, templates)
+    qp_gained, qp_total = get_qp(game_screen)
+    scroll_position = get_scroll_bar_start_height(game_screen)
+    drop_count = get_drop_count(game_screen)
+    return { "qp_gained": qp_gained, "qp_total": qp_total, 'scroll_position': scroll_position, "drop_count": drop_count, "drops_found": len(mat_drops), "drops": mat_drops }
 
 
 def load_image(image_path):
@@ -420,15 +487,12 @@ def run(image, debug=False, verbose=False):
         characters = load_template_images(characters, REFFOLDER)
         settings.extend(characters)
 
-    logging.info("Running...")
-    img_results = analyze_image(image, settings)
-
+    results = analyze_image(image, settings)
     end = time.time()
     duration = end - start
-
     logging.info(f"Completed in {duration:.2f} seconds.")
-    logging.info(f"{img_results}")
-    return img_results
+    logging.info(f"{results}")
+    return results
 
 
 if __name__ == '__main__':
@@ -445,3 +509,4 @@ if __name__ == '__main__':
     results = run(args.image, args.debug, args.verbose)
     if not (args.verbose or args.debug):
         print(results)
+
