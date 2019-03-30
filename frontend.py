@@ -5,7 +5,7 @@ import multiprocessing
 import signal
 import json
 import logging
-import imghdr
+import cv2
 import time
 import os
 import errno
@@ -40,7 +40,7 @@ def check_dirs_for_new_images(dir_list):
     work_items = []
     for folder in dir_list:
         for f in pathlib.Path(folder).iterdir():
-            if f.is_file() and imghdr.what(f) is not None:
+            if f.is_file() and cv2.imread(str(f)) is not None:
                 new_path = SCRIPT_BASE_PATH / 'output' / f.parts[-2] / f.name
                 if not os.path.exists(new_path.parent):
                     try:
