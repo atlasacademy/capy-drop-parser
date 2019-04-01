@@ -222,7 +222,8 @@ def get_qp(image):
     qp_total = get_qp_from_text(qp_total_text)
 
     if qp_total == 0:
-        raise Exception("Failed to extract QP total from text returned by tesseract")
+        logging.error("Failed to extract QP total from text returned by tesseract")
+        qp_total = -1
 
     return qp_gained, qp_total
 
