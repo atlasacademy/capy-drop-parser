@@ -11,7 +11,8 @@ RUN apt-get update \
  && apt-get install -y software-properties-common \
  && add-apt-repository -u -y ppa:alex-p/tesseract-ocr \
  && apt-get install -y python3-pip libgtk2.0-dev python-dev python-pip python3 tesseract-ocr libtesseract-dev tesseract-ocr-eng \
- && pip3 install -r /requirements.txt
+ && pip3 install -r /requirements.txt \
+ && curl -L -o /usr/share/tesseract-ocr/4.00/tessdata/eng.traineddata https://github.com/tesseract-ocr/tessdata_best/blob/master/eng.traineddata?raw=true
 
 COPY supervisord.conf /opt/docker/etc/supervisor.d/parser.conf
 
