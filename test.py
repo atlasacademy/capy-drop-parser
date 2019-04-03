@@ -329,9 +329,9 @@ class TestSpecialCases(unittest.TestCase):
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
-    def test_officer_altria(self):
+    def test_ui_overlay(self):
         self.maxDiff = None
-        expected = {'drops_found': 19, 'qp_gained': 8400, 'qp_total': 637232, 'drop_count': 25, 'drops': [
+        expected = {'drops_found': 19, 'qp_gained': 8400, 'qp_total': 640637232, 'drop_count': 25, 'drops': [
            {'id': 'guda2_shinsengumi_point.png', 'stack': 500, 'x': 0, 'y': 0},
            {'id': 'guda2_shinsengumi_point.png', 'stack': 500, 'x': 1, 'y': 0},
            {'id': 'guda2_shinsengumi_point.png', 'stack': 500, 'x': 2, 'y': 0},
