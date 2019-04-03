@@ -74,7 +74,6 @@ def countMat(targetImg, template, ptList):
 
 def getCharactersFromImage(matWindow, templates, threshold):
     charPtList = {}
-
     resultsImg = None
 
     if logging.getLogger().isEnabledFor(logging.DEBUG):
@@ -97,7 +96,6 @@ def getCharactersFromImage(matWindow, templates, threshold):
                 oldCharScore = charPtList[overlapCharPt][1]
                 if charScore > oldCharScore:
                     charPtList[overlapCharPt] = (charValue, charScore)
-                    # print "old -> new: %s -> %s @ %s [ %f vs %f ] " % (oldCharName, charValue, cpt, oldCharScore, charScore)
 
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         for cpt in charPtList:
@@ -123,7 +121,7 @@ def getCharactersFromImage(matWindow, templates, threshold):
 
 
 def get_stack_base(valueString):
-    matches = re.search(r'(x|\+)([0-9]+)', valueString)
+    matches = re.search(r'(?<!\()(x|\+)([0-9]+)', valueString)
     if matches is None or matches.group(2) is None or int(matches.group(2)) == 0:
         raise Exception('Failed to find base stack size')
 
