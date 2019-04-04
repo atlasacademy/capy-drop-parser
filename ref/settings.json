@@ -326,5 +326,9 @@
   {
     "id": "guda2_bronze_currency.png",
     "type": "currency"
+  },
+  {
+    "id": "guda2_bakufu_point.png",
+    "type": "currency"
   }
 ]
