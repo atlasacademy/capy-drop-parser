@@ -24,6 +24,7 @@ TRAINING_IMG_WIDTH = 1650
 TRAINING_IMG_ASPECT_RATIO = float(TRAINING_IMG_WIDTH) / TRAINING_IMG_HEIGHT
 TRAINING_IMG_MAT_SCALE = 0.54
 MIN_DISTANCE = 50
+DIGIT_MIN_DISTANCE = 9
 THRESHOLD = .82
 CHAR_THRESHOLD = .65
 CHAR_THRESHOLD_LOOSE = .59
@@ -73,7 +74,7 @@ def get_overlapped_char_point(current_char, charPtList):
     for point in charPtList.keys():
         max_merge_distance = 4
         if current_char['value'] == charPtList[point][0]:
-            max_merge_distance = 9
+            max_merge_distance = DIGIT_MIN_DISTANCE
         current_row = current_char['point'][1]
         current_column = current_char['point'][0]
         point_row = point[1]
@@ -224,7 +225,7 @@ def extract_text_from_image(image, file_name='pytesseract_input.png'):
 
 
 def get_qp(image):
-    qp_gained_text = extract_text_from_image(image[435:435 + 38, 220:220 + 300], 'qp_gained_text.png')
+    qp_gained_text = extract_text_from_image(image[435:435 + 38, 220:220 + 100], 'qp_gained_text.png')
     logging.info(f'QP gained text: {qp_gained_text}')
     qp_total_text = extract_text_from_image(image[481:481 + 38, 145:145 + 282], 'qp_total_text.png')
     logging.info(f'QP total text: {qp_total_text}')
