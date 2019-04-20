@@ -225,7 +225,7 @@ def extract_text_from_image(image, file_name='pytesseract_input.png'):
 
 
 def get_qp(image):
-    qp_gained_text = extract_text_from_image(image[435:435 + 38, 220:220 + 100], 'qp_gained_text.png')
+    qp_gained_text = extract_text_from_image(image[435:435 + 38, 220:220 + 300], 'qp_gained_text.png')
     logging.info(f'QP gained text: {qp_gained_text}')
     qp_total_text = extract_text_from_image(image[481:481 + 38, 145:145 + 282], 'qp_total_text.png')
     logging.info(f'QP total text: {qp_total_text}')
