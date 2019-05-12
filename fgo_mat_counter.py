@@ -248,7 +248,7 @@ def get_scroll_bar_start_height(image):
     _, template = cv2.threshold(cv2.imread(os.path.join(REFFOLDER, 'scroll_bar_upper.png'), cv2.IMREAD_GRAYSCALE), 225, 255, cv2.THRESH_BINARY)
     res = cv2.matchTemplate(binary, template, cv2.TM_CCOEFF_NORMED)
     _, maxValue, _, max_loc = cv2.minMaxLoc(res)
-    return max_loc[1] if maxValue > 0.5 else -1
+    return max_loc[1] / gray_image.shape[0] if maxValue > 0.5 else -1
 
 
 def get_aspect_ratio(image):

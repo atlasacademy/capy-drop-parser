@@ -376,7 +376,7 @@ class TestScrollBarLocation(unittest.TestCase):
     def test_scroll_bar_at_bottom(self):
         test_image = os.path.join(os.getcwd(), 'test_data', 'scrolled_down.png')
         res = fgo_mat_counter.run(test_image, DEBUG, VERBOSE)
-        self.assertLess(5, res['scroll_position'])
+        self.assertLess(0.05, res['scroll_position'])
 
 
 class TestFrontend(unittest.TestCase):
