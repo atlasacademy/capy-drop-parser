@@ -134,11 +134,14 @@ def getCharactersFromImage(matWindow, templates, threshold):
 
 
 def get_stack_base(valueString):
-    matches = re.search(r'^([x+])([0-9]+)(?!\))', valueString)
-    if matches is None or matches.group(2) is None or int(matches.group(2)) == 0:
-        raise Exception('Failed to find base stack size')
+    regexs = [{'re': r'^([x+])([0-9]+)(?!\))', 'group': 2}, {'re': r'([0-9]+)\(', 'group': 0}]
+    for regex in regexs:
+        match = re.search(regex['re'], valueString)
+        if not (match is None or match.group(regex['group']) is None or int(match.group(regex['group'])) == 0):
+            return int(match.group(regex['group']))
 
-    return int(matches.group(2))
+    raise Exception(f'Failed to find base stack size in {valueString}')
+
 
 
 def checkValueString(valueString):
@@ -159,14 +162,15 @@ def get_stack_sizes(image, mat_drops, templates):
                 character_image = image[drop['y'] + 55:drop['y'] + 89, drop['x']:drop['x'] + 95]
                 stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD)
                 if not checkValueString(stack_size_string):
-                    logging.warning(f"Failed to get stack count for {drop}, retrying with lower threshold")
+                    logging.warning(f"Unable to get stack count for {drop} from {stack_size_string}. Retrying with lower threshold")
                     stack_size_string = getCharactersFromImage(character_image, character_templates, CHAR_THRESHOLD_LOOSE)
 
-                logging.info(f'Raw string from character matching: {stack_size_string}')
                 if checkValueString(stack_size_string):
                     drop['stack'] = get_stack_base(stack_size_string)
+                    logging.debug(f'Stack size found from {stack_size_string}'
+                                  f' is {drop["stack"]}')
                 else:
-                    logging.error(f'Failed to get stack base for {drop}')
+                    logging.error(f'Failed to get stack base for {drop} from string {stack_size_string}')
                     drop['stack'] = -1
 
 
@@ -472,13 +476,15 @@ def run(image, debug=False, verbose=False):
     else:
         log_level = logging.ERROR
 
-    logging.basicConfig(format='%(relativeCreated)6d %(threadName)s %(message)s',
+    logging.basicConfig(format='%(relativeCreated)6d %(threadName)s [%(levelname)s] %(message)s',
                         level=log_level,
                         filename='logfile.log',
                         filemode='w')
 
     # Write the log output to stderr as well
-    logging.getLogger().addHandler(logging.StreamHandler())
+    stream_handle = logging.StreamHandler()
+    stream_handle.setFormatter(logging.Formatter('[%(levelname)s] %(message)s'))
+    logging.getLogger().addHandler(stream_handle)
 
     base_settings = os.path.join(REFFOLDER, "settings.json")
     base_img_dir_image = os.path.dirname(image)
