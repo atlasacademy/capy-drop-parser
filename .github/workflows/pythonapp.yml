@@ -14,7 +14,7 @@ jobs:
       with:
         python-version: 3.6.9
     - name: Download Tesseract and trained data
-      run: /
+      run: |
         apt-get install -y software-properties-common
         add-apt-repository -u -y ppa:alex-p/tesseract-ocr
         apt-get install -y tesseract-ocr libtesseract-dev tesseract-ocr-eng
