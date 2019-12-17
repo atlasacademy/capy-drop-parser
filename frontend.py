@@ -17,6 +17,7 @@ import fgo_mat_counter
 TERMINATE = False
 SCRIPT_BASE_PATH = pathlib.Path(sys.argv[0]).parent
 
+
 def signal_handling(*_):
     global TERMINATE
     if TERMINATE:
@@ -26,6 +27,7 @@ def signal_handling(*_):
 
 
 signal.signal(signal.SIGINT, signal_handling)
+
 
 def get_node_directories():
     node_dirs = []
@@ -54,6 +56,7 @@ def check_dirs_for_new_images(dir_list):
 
     return work_items
 
+
 def normalize_drop_locations(drops):
     for drop in drops:
         drop['y'] = int(drop['y'] / 110)
@@ -61,11 +64,13 @@ def normalize_drop_locations(drops):
 
     return drops
 
+
 def convert_score_to_float_for_json(drops):
     for drop in drops:
         drop['score'] = float(drop['score'])
 
     return drops
+
 
 def create_result_json_file(result):
     image_path = pathlib.Path(result['image_path'])
@@ -112,7 +117,6 @@ if __name__ == '__main__':
                                      {}, handle_success, handle_failure)
 
         time.sleep(int(args.polling_frequency))
-
 
     print("shutting down....")
     process_pool.close()

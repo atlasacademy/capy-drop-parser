@@ -10,11 +10,13 @@ import fgo_mat_counter
 DEBUG = False
 VERBOSE = False
 
+
 def remove_scores(dictionary):
     for drop in dictionary['drops']:
         drop.pop('score', None)
 
     return dictionary
+
 
 def remove_qp_drops(dictionary):
     new_drops = []
@@ -32,6 +34,7 @@ def remove_location(dictionary):
         drop.pop('y')
     return dictionary
 
+
 def remove_scroll_position(dictionary):
     dictionary.pop('scroll_position', None)
     return dictionary
@@ -42,6 +45,7 @@ def update(d):
         drop['x'] = drop['x'] + 40
 
     print(d)
+
 
 def prepare_for_comparison(dictionary):
 
@@ -228,7 +232,6 @@ class TestEvents(unittest.TestCase):
         self.maxDiff = None
         expected = {'qp_gained': 6400, 'qp_total': 170761518, 'scroll_position': 0, 'drop_count': 19, 'drops_found': 20, 'drops': [{'id': 'Archer Piece.png', 'x': 169, 'y': 24, 'score': 0.9497172, 'stack': 0}, {'id': 'qp.png', 'x': 57, 'y': 18, 'score': 0.9961114, 'stack': 0}, {'id': 'valentine_2019_saber_coin.png', 'x': 279, 'y': 21, 'score': 0.96185666, 'stack': 2}, {'id': 'valentine_2019_saber_coin.png', 'x': 391, 'y': 21, 'score': 0.9453553, 'stack': 2}, {'id': 'valentine_2019_saber_coin.png', 'x': 502, 'y': 21, 'score': 0.9788375, 'stack': 2}, {'id': 'valentine_2019_saber_coin.png', 'x': 613, 'y': 21, 'score': 0.9396837, 'stack': 2}, {'id': 'valentine_2019_lancer_coin.png', 'x': 168, 'y': 136, 'score': 0.95286167, 'stack': 2}, {'id': 'valentine_2019_lancer_coin.png', 'x': 56, 'y': 137, 'score': 0.9263724, 'stack': 2}, {'id': 'valentine_2019_all_coin.png', 'x': 502, 'y': 137, 'score': 0.9618784, 'stack': 2}, {'id': 'valentine_2019_archer_coin.png', 'x': 724, 'y': 21, 'score': 0.9435896, 'stack': 2}, {'id': 'valentine_2019_all_coin.png', 'x': 391, 'y': 131, 'score': 0.9674793, 'stack': 2}, {'id': 'valentine_2019_all_coin.png', 'x': 279, 'y': 132, 'score': 0.93297756, 'stack': 2}, {'id': 'valentine_2019_choco.png', 'x': 613, 'y': 128, 'score': 0.99094504, 'stack': 6}, {'id': 'valentine_2019_choco.png', 'x': 725, 'y': 128, 'score': 0.99210346, 'stack': 7}, {'id': 'valentine_2019_choco.png', 'x': 57, 'y': 243, 'score': 0.98842907, 'stack': 7}, {'id': 'valentine_2019_choco.png', 'x': 168, 'y': 243, 'score': 0.9940306, 'stack': 7}, {'id': 'valentine_2019_choco.png', 'x': 279, 'y': 243, 'score': 0.993614, 'stack': 6}, {'id': 'valentine_2019_choco.png', 'x': 391, 'y': 243, 'score': 0.9881494, 'stack': 7}, {'id': 'valentine_2019_choco.png', 'x': 502, 'y': 243, 'score': 0.995087, 'stack': 7}, {'id': 'valentine_2019_choco.png', 'x': 613, 'y': 243, 'score': 0.99105835, 'stack': 7}]}
 
-
         test_image = os.path.join(os.getcwd(), 'test_data', 'valentine_2019_expert_knight.png')
         expected = prepare_for_comparison(expected)
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
@@ -243,7 +246,6 @@ class TestSpecialCases(unittest.TestCase):
             {'id': 'Bloodstone Tear.png', 'x': 169, 'y': 7, 'score': '0.92565679', 'stack': 0},
             {'id': 'Void Dust.png', 'x': 279, 'y': 6, 'score': '0.97221052', 'stack': 0}]}
 
-
         test_image = os.path.join(os.getcwd(), 'test_data', 'samsung_s9_red_filter_43_percent.jpg')
         expected = prepare_for_comparison(expected)
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
@@ -255,7 +257,6 @@ class TestSpecialCases(unittest.TestCase):
             {'id': 'Magic Gem of Assassin.png', 'x': 280, 'y': 8, 'score': '0.95031976', 'stack': 0},
             {'id': 'Homunculus Baby.png', 'x': 168, 'y': 9, 'score': '0.94004923', 'stack': 0}]}
 
-
         test_image = os.path.join(os.getcwd(), 'test_data', 'black_and_blue_border.jpg')
         expected = prepare_for_comparison(expected)
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
@@ -266,7 +267,6 @@ class TestSpecialCases(unittest.TestCase):
             {'id': 'Shining Gem of Assassin.png', 'x': 390, 'y': 7, 'score': '0.97608447', 'stack': 0},
             {'id': 'Magic Gem of Assassin.png', 'x': 280, 'y': 8, 'score': '0.95031976', 'stack': 0},
             {'id': 'Homunculus Baby.png', 'x': 168, 'y': 9, 'score': '0.94004923', 'stack': 0}]}
-
 
         test_image = os.path.join(os.getcwd(), 'test_data', 'black_and_blue_border_light_bg.jpg')
         expected = prepare_for_comparison(expected)
@@ -298,7 +298,6 @@ class TestSpecialCases(unittest.TestCase):
             {'id': 'valentine_2019_assassin_coin.png', 'x': 99, 'y': 268, 'score': 0.9704671, 'stack': 2},
             {'id': 'valentine_2019_assassin_coin.png', 'x': 210, 'y': 268, 'score': 0.960992, 'stack': 2}]}
 
-
         test_image = os.path.join(os.getcwd(), 'test_data', 'side_bottom_blue_borders.png')
         expected = prepare_for_comparison(expected)
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
@@ -323,7 +322,6 @@ class TestSpecialCases(unittest.TestCase):
              {'id': 'valentine_2019_choco.png', 'x': 6, 'y': 1, 'stack': 6},
              {'id': 'valentine_2019_choco.png', 'x': 0, 'y': 2, 'stack': 6},
              {'id': 'valentine_2019_choco.png', 'x': 1, 'y': 2, 'stack': 6}]}
-
 
         test_image = pathlib.Path(__file__).parent / 'test_data' / 'touch_mark.png'
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
@@ -373,6 +371,8 @@ class TestScrollBarLocation(unittest.TestCase):
         res = fgo_mat_counter.run(test_image, DEBUG, VERBOSE)
         self.assertEqual(-1, res['scroll_position'])
 
+    # Note: this is the test that fails to find the stack size of the valentine chocos and doesn't fail despite
+    # generating long list of error messages.
     def test_scroll_bar_at_bottom(self):
         test_image = os.path.join(os.getcwd(), 'test_data', 'scrolled_down.png')
         res = fgo_mat_counter.run(test_image, DEBUG, VERBOSE)
@@ -392,7 +392,6 @@ class TestFrontend(unittest.TestCase):
             {'id': 'Void Dust.png', 'x': 2, 'y': 0, 'score': '0.97221052', 'stack': 0}]
 
         self.assertEqual(expected, frontend.normalize_drop_locations(input_data))
-
 
     def test_location_normalization_three_rows(self):
         input_data = [
@@ -440,7 +439,6 @@ class TestFrontend(unittest.TestCase):
             {'id': 'christmas_2018_silver_currency.png', 'x': 0, 'y': 2, 'score': 0.96317625, 'stack': 3}]
 
         self.assertEqual(expected, frontend.normalize_drop_locations(input_data))
-
 
 
 if __name__ == '__main__':
