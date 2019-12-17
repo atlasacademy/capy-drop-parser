@@ -143,7 +143,6 @@ def get_stack_base(valueString):
     raise Exception(f'Failed to find base stack size in {valueString}')
 
 
-
 def checkValueString(valueString):
     try:
         get_stack_base(valueString)
@@ -206,6 +205,7 @@ def countMats(mat_drops_window, templates):
 
     return drops
 
+
 def get_qp_from_text(text):
     qp = 0
     power = 1
@@ -229,7 +229,7 @@ def extract_text_from_image(image, file_name='pytesseract_input.png'):
 
 
 def get_qp(image):
-    qp_gained_text = extract_text_from_image(image[435:435 + 38, 220:220 + 300], 'qp_gained_text.png')
+    qp_gained_text = extract_text_from_image(image[435:435 + 38, 230:230 + 300], 'qp_gained_text.png')
     logging.info(f'QP gained text: {qp_gained_text}')
     qp_total_text = extract_text_from_image(image[481:481 + 38, 145:145 + 282], 'qp_total_text.png')
     logging.info(f'QP total text: {qp_total_text}')
