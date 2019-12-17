@@ -330,5 +330,17 @@
   {
     "id": "guda2_bakufu_point.png",
     "type": "currency"
+  },
+  {
+    "id": "christmas_2019_bronze_currency.png",
+    "type": "currency"
+  },
+  {
+    "id": "christmas_2019_silver_currency.png",
+    "type": "currency"
+  },
+  {
+    "id": "christmas_2019_lotto_currency.png",
+    "type": "currency"
   }
 ]

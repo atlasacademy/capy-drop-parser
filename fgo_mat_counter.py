@@ -79,7 +79,7 @@ def get_overlapped_char_point(current_char, charPtList):
         current_column = current_char['point'][0]
         point_row = point[1]
         point_column = point[0]
-        if abs(point_row - current_row) < max_merge_distance and abs(point_column - current_column) < max_merge_distance:
+        if abs(point_column - current_column) < max_merge_distance:
             return point
 
     return None
