@@ -237,7 +237,7 @@ class TestEvents(unittest.TestCase):
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
-    def test_christmas_2019(self):
+    def test_christmas_2019_0(self):
         self.maxDiff = None
         expected = {'qp_gained': 6400, 'qp_total': 262423571, 'scroll_position': 0.5121212121212121, 'drop_count': 35, 'drops_found': 15, 'drops': [
             {'id': 'christmas_2019_bronze_currency.png', 'x': 281, 'y': 20, 'score': 0.9949813, 'stack': 2},
@@ -256,7 +256,37 @@ class TestEvents(unittest.TestCase):
             {'id': 'christmas_2019_silver_currency.png', 'x': 58, 'y': 21, 'score': 0.9789214, 'stack': 2},
             {'id': 'christmas_2019_silver_currency.png', 'x': 170, 'y': 21, 'score': 0.98356074, 'stack': 2}]}
 
-        test_image = os.path.join(os.getcwd(), 'test_data', 'christmas_2019.png')
+        test_image = os.path.join(os.getcwd(), 'test_data', 'christmas_2019_0.png')
+        expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
+        self.assertEqual(expected, result)
+
+    def test_christmas_2019_1(self):
+        self.maxDiff = None
+        expected = {'qp_gained': 6400, 'qp_total': 262423571, 'scroll_position': 0.3484848484848485, 'drop_count': 35, 'drops_found': 21, 'drops': [
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 282, 'y': 132, 'score': 0.99830097, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 393, 'y': 132, 'score': 0.98964256, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 505, 'y': 132, 'score': 0.9994966, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 617, 'y': 132, 'score': 0.99008363, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 728, 'y': 132, 'score': 0.9982799, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 59, 'y': 247, 'score': 0.99418277, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 170, 'y': 247, 'score': 0.9945999, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 282, 'y': 247, 'score': 0.997682, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 394, 'y': 247, 'score': 0.98909676, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 505, 'y': 247, 'score': 0.9988678, 'stack': 3},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 617, 'y': 247, 'score': 0.9895193, 'stack': 3},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 728, 'y': 247, 'score': 0.9976686, 'stack': 2},
+            {'id': 'christmas_2019_silver_currency.png', 'x': 282, 'y': 24, 'score': 0.9961404, 'stack': 2},
+            {'id': 'christmas_2019_silver_currency.png', 'x': 505, 'y': 24, 'score': 0.9985496, 'stack': 2},
+            {'id': 'christmas_2019_silver_currency.png', 'x': 728, 'y': 24, 'score': 0.99564886, 'stack': 2},
+            {'id': 'christmas_2019_silver_currency.png', 'x': 393, 'y': 25, 'score': 0.9783469, 'stack': 2},
+            {'id': 'christmas_2019_silver_currency.png', 'x': 616, 'y': 25, 'score': 0.979079, 'stack': 2},
+            {'id': 'christmas_2019_silver_currency.png', 'x': 58, 'y': 140, 'score': 0.9871048, 'stack': 2},
+            {'id': 'christmas_2019_silver_currency.png', 'x': 170, 'y': 140, 'score': 0.98645586, 'stack': 2},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 59, 'y': 23, 'score': 0.99594575, 'stack': 3},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 170, 'y': 23, 'score': 0.99681616, 'stack': 3}]}
+
+        test_image = os.path.join(os.getcwd(), 'test_data', 'christmas_2019_1.png')
         expected = prepare_for_comparison(expected)
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
@@ -467,3 +497,4 @@ class TestFrontend(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
