@@ -237,6 +237,30 @@ class TestEvents(unittest.TestCase):
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
+    def test_christmas_2019(self):
+        self.maxDiff = None
+        expected = {'qp_gained': 6400, 'qp_total': 262423571, 'scroll_position': 0.5121212121212121, 'drop_count': 35, 'drops_found': 15, 'drops': [
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 281, 'y': 20, 'score': 0.9949813, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 393, 'y': 20, 'score': 0.9865247, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 504, 'y': 20, 'score': 0.9962132, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 616, 'y': 20, 'score': 0.9869653, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 727, 'y': 20, 'score': 0.99507093, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 59, 'y': 127, 'score': 0.9903159, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 282, 'y': 127, 'score': 0.9936446, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 505, 'y': 127, 'score': 0.9947797, 'stack': 3},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 170, 'y': 128, 'score': 0.9907104, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 393, 'y': 128, 'score': 0.9853895, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 616, 'y': 128, 'score': 0.9859005, 'stack': 3},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 728, 'y': 128, 'score': 0.9936578, 'stack': 2},
+            {'id': 'christmas_2019_bronze_currency.png', 'x': 59, 'y': 243, 'score': 0.99296165, 'stack': 2},
+            {'id': 'christmas_2019_silver_currency.png', 'x': 58, 'y': 21, 'score': 0.9789214, 'stack': 2},
+            {'id': 'christmas_2019_silver_currency.png', 'x': 170, 'y': 21, 'score': 0.98356074, 'stack': 2}]}
+
+        test_image = os.path.join(os.getcwd(), 'test_data', 'christmas_2019.png')
+        expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
+        self.assertEqual(expected, result)
+
 
 class TestSpecialCases(unittest.TestCase):
     def test_red_filter(self):
