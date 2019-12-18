@@ -22,7 +22,7 @@ jobs:
       uses: actions/cache@v1
       id: cache-tesseract-traineddata
       with:
-        path: /usr/share/tesseract-ocr/4.00/tessdata/eng.traineddata
+        path: /usr/share/tesseract-ocr/4.00/tessdata/
         key: ${{ runner.os }}-tesseract-traineddata
     - name: Download Tesseract trained data
       if: steps.cache-tesseract-traineddata.outputs.cache-hit != 'true'
