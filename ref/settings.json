@@ -342,5 +342,9 @@
   {
     "id": "christmas_2019_lotto_currency.png",
     "type": "currency"
+  },
+  {
+    "id": "Deadly Poisonous Needle.png",
+    "type": "material"
   }
 ]
