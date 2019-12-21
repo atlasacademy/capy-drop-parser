@@ -291,6 +291,33 @@ class TestEvents(unittest.TestCase):
         result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
         self.assertEqual(expected, result)
 
+    def test_christmas_2019_2(self):
+        self.maxDiff = None
+        expected = {'qp_gained': 9400, 'qp_total': 287260176, 'scroll_position': 0.021212121212121213, 'drop_count': 16, 'drops_found': 17, 'drops': [
+            {'id': 'Saber Monument.png', 'x': 282, 'y': 43, 'score': 0.93993855, 'stack': 0},
+            {'id': 'qp.png', 'x': 59, 'y': 38, 'score': 0.99530935, 'stack': 0},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 394, 'y': 38, 'score': 0.99796206, 'stack': 2},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 505, 'y': 38, 'score': 0.987121, 'stack': 2},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 617, 'y': 38, 'score': 0.9977749, 'stack': 2},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 728, 'y': 38, 'score': 0.9913537, 'stack': 2},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 60, 'y': 153, 'score': 0.9932705, 'stack': 2},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 171, 'y': 153, 'score': 0.9977677, 'stack': 2},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 283, 'y': 153, 'score': 0.98959625, 'stack': 2},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 394, 'y': 153, 'score': 0.9981492, 'stack': 5},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 505, 'y': 153, 'score': 0.98719144, 'stack': 5},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 617, 'y': 153, 'score': 0.9979763, 'stack': 5},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 728, 'y': 153, 'score': 0.99147636, 'stack': 5},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 60, 'y': 268, 'score': 0.99332535, 'stack': 2},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 171, 'y': 268, 'score': 0.9977148, 'stack': 2},
+            {'id': 'christmas_2019_lotto_currency.png', 'x': 283, 'y': 268, 'score': 0.98972267, 'stack': 2},
+            {'id': 'Deadly Poisonous Needle.png', 'x': 170, 'y': 39, 'score': 0.9856361, 'stack': 0}]}
+
+
+        test_image = os.path.join(os.getcwd(), 'test_data', 'christmas_2019_2.png')
+        expected = prepare_for_comparison(expected)
+        result = prepare_for_comparison(fgo_mat_counter.run(test_image, DEBUG, VERBOSE))
+        self.assertEqual(expected, result)
+
 
 class TestSpecialCases(unittest.TestCase):
     def test_red_filter(self):
