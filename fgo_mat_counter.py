@@ -134,7 +134,7 @@ def getCharactersFromImage(matWindow, templates, threshold):
 
 
 def get_stack_base(valueString):
-    regexs = [{'re': r'([0-9]+)[(+]', 'group': 1}, {'re': r'^([x+]+)([0-9]+)(?!\))', 'group': 2}]
+    regexs = [{'re': r'([0-9]+)[(+]', 'group': 1}, {'re': r'^([x+]+)([0-9]+)(?!\))', 'group': 2}, {'re': r'x+([0-9]+)', 'group': 1}]
     for regex in regexs:
         match = re.search(regex['re'], valueString)
         if not (match is None or match.group(regex['group']) is None or int(match.group(regex['group'])) == 0):
