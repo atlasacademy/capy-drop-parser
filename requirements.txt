@@ -1,4 +1,4 @@
-numpy==1.16.1
-opencv-python-headless==4.0.0.21
-Pillow==6.2.0
-pytesseract==0.2.6
+numpy==1.18.2
+opencv-python-headless==4.2.0.34
+Pillow==7.1.1
+pytesseract==0.3.3

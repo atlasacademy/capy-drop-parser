@@ -6,4 +6,4 @@
 /*.png
 /venv
 .DS_Store
-
+.vscode/
