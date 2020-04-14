@@ -9,10 +9,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Python 3.6.9 (Ubuntu 18.04)
+    - name: Set up Python 3.6 (Ubuntu 18.04)
       uses: actions/setup-python@v1
       with:
-        python-version: 3.6.9
+        python-version: 3.6
     - name: Install Tesseract
       run: |
         sudo apt-get install -y software-properties-common
