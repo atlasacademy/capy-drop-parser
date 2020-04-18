@@ -325,117 +325,49 @@ def get_bounding_rectangle_for_all_contours(contours):
     return (min_x, min_y, max_x - min_x, max_y - min_y)
 
 
-def find_side_edges(image):
-    # This attempts to find the white border of the drop window within the input image.
-    # The concept is that the vertical white borders will be one of the edges that transition from light to dark (left border)
-    # or from dark to light (right border). Since the borders are brighter than their surroundings we look for columns
-    # with an average "brightness" larger than the average of columns around it.
+def find_side_edges(rgb_image):
+    # https://github.com/fgophi/fgosccnt/blob/master/fgosccnt.py ScreenShot.extract_game_screen()
+    gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
+    height, width = rgb_image.shape[:2]
+    canny_img = cv2.Canny(gray_image, 100, 100)
+    # Line detectinon
+    # In the case where minLineLength is too short, it catches the line of the item.
+    # Some pictures fail when maxLineGap=7
+    lines = cv2.HoughLinesP(
+        canny_img,
+        rho=1,
+        theta=np.pi / 2,
+        threshold=80,
+        minLineLength=int(height / 5),
+        maxLineGap=8,
+    )
+    lines = lines[:, 0]
 
-    class Edge:
-        # Edge direction is defined as being from light to dark
-        def __init__(self, location, raw_value, relative_value, direction):
-            self.location = location
-            self.raw_value = raw_value
-            self.relative_value = relative_value
-            self.direction = direction
+    if logging.getLogger().isEnabledFor(logging.DEBUG):
+        line_img = rgb_image.copy()
+        for line in lines:
+            x1, y1, x2, y2 = line
+            line_img = cv2.line(line_img, (x1, y1), (x2, y2), (0, 0, 255), 1)
+            cv2.imwrite("HoughLinesP_result.png", line_img)
 
-    column_sums = []
-    image_height, image_width = image.shape
-    for column in range(0, int(image_width / 3)):
-        pair = 0
-        for row in range(0, image_height):
-            pair += image[row, column]
-
-        heapq.heappush(column_sums, (column, pair))
-
-    for column in range(int((image_width / 3) * 2), image_width):
-        pair = 0
-        for row in range(0, image_height):
-            pair += image[row, column]
-
-        heapq.heappush(column_sums, (column, pair))
-
-    def detect_vertical_edges(column_sums, threshold):
-        edges = []
-        for index, pair in enumerate(column_sums):
-            window_size = 10
-            li = max(index - window_size, 0)
-            ri = min(index + window_size, len(column_sums) - 1)
-            if (
-                pair[0] - column_sums[li][0] > window_size
-                or column_sums[ri][0] - pair[0] > window_size
-            ):
-                continue
-            if pair[0] < image_width / 3:
-                # Look for transition from light to dark
-                rc = [x[1] for x in column_sums[index + 1 : ri]]
-                if len(rc) < 1:
-                    continue
-                average = sum(rc) / len(rc)
-                if pair[1] - average > threshold:
-                    edges.append(Edge(pair[0], pair[1], pair[1] - average, "right"))
-            else:
-                # Look for transition from dark to light
-                lc = [x[1] for x in column_sums[li:index]]
-                if len(lc) < 1:
-                    continue
-                average = sum(lc) / len(lc)
-                if pair[1] - average > threshold:
-                    edges.append(Edge(pair[0], pair[1], pair[1] - average, "left"))
-
-        return edges
-
-    def reduce_consecutive_edges(edges):
-        if len(edges) < 2:
-            return edges
-        nl = []
-        edges.sort(key=lambda x: x.location)
-        merged_edge = edges[0]
-        offset = 1
-        for edge in edges[1:]:
-            if merged_edge.location + offset != edge.location:
-                nl.append(merged_edge)
-                merged_edge = edge
-                offset = 1
-            elif merged_edge.relative_value < edge.relative_value:
-                merged_edge = edge
-                offset = 1
-            else:
-                offset += 1
-
-        nl.append(merged_edge)
-        return nl
-
-    def find_edge(column_sums):
-        threshold = 100000
-        edges = reduce_consecutive_edges(detect_vertical_edges(column_sums, threshold))
-        while len(edges) < 1 and threshold > 0:
-            threshold -= 10000
-            edges = reduce_consecutive_edges(
-                detect_vertical_edges(column_sums, threshold)
-            )
-        return edges
-
-    left_edges = find_edge([x for x in column_sums if x[0] < image_width / 3])
-    right_edges = find_edge([x for x in column_sums if x[0] > image_width / 3])
-    if len(left_edges) < 1:
-        raise Exception("Could not find left edge.")
-    if len(right_edges) < 1:
-        raise Exception("Could not find right edge.")
-
-    left_edge = heapq.nsmallest(
-        1, filter(lambda x: x.direction == "right", left_edges), lambda x: x.location
-    )[0].location
-    right_edge = heapq.nlargest(
-        1, filter(lambda x: x.direction == "left", right_edges), lambda x: x.location
-    )[0].location
-    return left_edge, right_edge
+    left_x = lines[(lines[:, 0] == lines[:, 2]) & (lines[:, 0] < width / 2), 0].max()
+    upper_y = lines[(lines[:, 1] == lines[:, 3]) & (lines[:, 1] < height / 2), 1].max()
+    # bottom_y = lines[(lines[:, 1] == lines[:, 3]) & (lines[:, 1] > height / 2), 1].min()
+    # Detect Right line
+    # Avoid catching the line of the scroll bar
+    right_x = lines[
+        (lines[:, 0] == lines[:, 2])  # Vertical
+        & (lines[:, 0] > width / 2)  # On the right side
+        & ((lines[:, 1] < upper_y) | (lines[:, 3] < upper_y)),  # Under the upper_y
+        0,
+    ].min()
+    return left_x, right_x
 
 
 def extract_game_screen(image):
     # Step 1: Attempt to find the left and right sides of the drop window.
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    game_screen_x, right_edge = find_side_edges(gray_image)
+    game_screen_x, right_edge = find_side_edges(image)
     game_screen_width = right_edge - game_screen_x
 
     # Step 2: Calculate expected height of game screen based on the expected aspect ratio.
