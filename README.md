@@ -2,7 +2,7 @@
 
 [![Discord server invite](https://discordapp.com/api/guilds/502554574423457812/embed.png)](https://discord.gg/TKJmuCR)
 
-#### Settinngs and ref files layout
+#### Settings and ref files layout
 ```
 ├── input
     ├── quest_1
@@ -57,3 +57,6 @@ optional arguments:
                         how often to check for new images in seconds
 ```
 You can either run this script manually or you can run the Dockerfile. The script will monitor the `/input` folder, parse, move the parsed images and write the output jsons to `/output`. `/input` must have the layout above.
+
+#### Development
+- Use black to format Python code
