@@ -6,7 +6,6 @@
 #################################################################################
 
 import argparse
-import heapq
 import json
 import logging
 import os
@@ -254,7 +253,8 @@ def extract_text_from_image(image, file_name="pytesseract_input.png"):
         cv2.imwrite(file_name, qp_image)
 
     return pytesseract.image_to_string(
-        qp_image, config="-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=,0123456789"
+        qp_image,
+        config="-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=+,0123456789",
     )
 
 
@@ -325,7 +325,7 @@ def get_bounding_rectangle_for_all_contours(contours):
     return (min_x, min_y, max_x - min_x, max_y - min_y)
 
 
-def find_side_edges(rgb_image):
+def find_drop_window_edges(rgb_image):
     # https://github.com/fgophi/fgosccnt/blob/master/fgosccnt.py ScreenShot.extract_game_screen()
     gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
     height, width = rgb_image.shape[:2]
@@ -352,7 +352,7 @@ def find_side_edges(rgb_image):
 
     left_x = lines[(lines[:, 0] == lines[:, 2]) & (lines[:, 0] < width / 2), 0].max()
     upper_y = lines[(lines[:, 1] == lines[:, 3]) & (lines[:, 1] < height / 2), 1].max()
-    # bottom_y = lines[(lines[:, 1] == lines[:, 3]) & (lines[:, 1] > height / 2), 1].min()
+    bottom_y = lines[(lines[:, 1] == lines[:, 3]) & (lines[:, 1] > height / 2), 1].min()
     # Detect Right line
     # Avoid catching the line of the scroll bar
     right_x = lines[
@@ -361,44 +361,25 @@ def find_side_edges(rgb_image):
         & ((lines[:, 1] < upper_y) | (lines[:, 3] < upper_y)),  # Under the upper_y
         0,
     ].min()
-    return left_x, right_x
+    drop_screen_aspect_ratio = (right_x - left_x) / (bottom_y - upper_y)
+    expected_drop_screen_ar = 2.64
+    if abs(expected_drop_screen_ar - drop_screen_aspect_ratio) < 0.02:
+        logging.warning("Unexpected drop screen aspect ratio returned by HoughLinesP")
+    return left_x, right_x, upper_y, bottom_y
 
 
 def extract_game_screen(image):
-    # Step 1: Attempt to find the left and right sides of the drop window.
-    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    game_screen_x, right_edge = find_side_edges(image)
-    game_screen_width = right_edge - game_screen_x
-
-    # Step 2: Calculate expected height of game screen based on the expected aspect ratio.
-    expected_game_screen_aspect_ratio = 1.5277777778
-    expected_game_screen_height = int(
-        round(game_screen_width / expected_game_screen_aspect_ratio, 0)
-    )
     image_height, image_width, _ = image.shape
-    # If the expect height is close enough to the actual height there probably isn't any top/botttom border.
-    if abs(expected_game_screen_height - image_height) < 35:
-        expected_game_screen_height = image_height
-    _, binary_image = cv2.threshold(gray_image, 120, 255, cv2.THRESH_BINARY)
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
-        cv2.imwrite("vertical_boundaries.png", binary_image)
-    contours, _ = cv2.findContours(
-        binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-    )
-    _, detected_y, _, _ = get_bounding_rectangle_for_all_contours(contours)
-    # If the detected top is within some range of the top of input image we assume there is no top border.
-    if detected_y < 35:
-        game_screen = image[
-            0:expected_game_screen_height,
-            game_screen_x : game_screen_x + game_screen_width,
-        ]
-    else:
-        image_height, image_width, _ = image.shape
-        height_adjustment = int(abs(image_height - expected_game_screen_height) / 2)
-        game_screen = image[
-            height_adjustment : image_height - height_adjustment,
-            game_screen_x : game_screen_x + game_screen_width,
-        ]
+    drop_left, drop_right, drop_top, drop_bottom = find_drop_window_edges(image)
+    drop_height = drop_bottom - drop_top
+    # Magic numbers come from a iPad Pro 11 screenshot
+    game_top = max(0, int(drop_bottom - drop_height * (1075 / 853)))
+    game_bottom = min(image_height, int(drop_top + drop_height * (1243 / 853)))
+    if game_top < 35:
+        game_top = 0
+    if (image_height - game_bottom) < 35:
+        game_bottom = image_height
+    game_screen = image[game_top:game_bottom, drop_left:drop_right]
 
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         cv2.imwrite("game_screen.png", game_screen)
