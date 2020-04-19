@@ -59,6 +59,7 @@ def prepare_for_comparison(dictionary):
 
 class TestEvents(unittest.TestCase):
     def test_da_vinci(self):
+        self.maxDiff = None
         expected = {'qp_gained': 9400, 'qp_total': 357256131, 'drop_count': 15, 'drops_found': 16, 'drops': [{'id': 'Manuscript (True).png', 'x': 392, 'y': 7, 'score': '0.91605514', 'stack': 3}, {'id': 'Manuscript (True).png', 'x': 503, 'y': 7, 'score': '0.91864091', 'stack': 3}, {'id': 'Manuscript (True).png', 'x': 615, 'y': 7, 'score': '0.90524661', 'stack': 3}, {'id': 'Manuscript (True).png', 'x': 726, 'y': 7, 'score': '0.91897970', 'stack': 3}, {'id': 'Manuscript (False).png', 'x': 59, 'y': 121, 'score': '0.97181606', 'stack': 3}, {'id': 'Manuscript (False).png', 'x': 170, 'y': 121, 'score': '0.97234934', 'stack': 3}, {'id': 'Manuscript (False).png', 'x': 281, 'y': 121, 'score': '0.97120785', 'stack': 3}, {'id': 'Manuscript (False).png', 'x': 393, 'y': 121, 'score': '0.97240418', 'stack': 3}, {'id': 'Manuscript (False).png', 'x': 504, 'y': 121, 'score': '0.97294944', 'stack': 3}, {'id': 'Manuscript (False).png', 'x': 616, 'y': 121, 'score': '0.97055381', 'stack': 3}, {'id': 'Manuscript (False).png', 'x': 727, 'y': 121, 'score': '0.97198474', 'stack': 10}, {'id': 'Manuscript (False).png', 'x': 59, 'y': 236, 'score': '0.97227716', 'stack': 3}, {'id': 'Manuscript (False).png', 'x': 170, 'y': 236, 'score': '0.97235178', 'stack': 3}, {'id': 'Lancer Piece.png', 'x': 171, 'y': 8, 'score': '0.89710170', 'stack': 0}, {'id': 'Berserker Piece.png', 'x': 281, 'y': 9, 'score': '0.94229006', 'stack': 0}]}
 
 
