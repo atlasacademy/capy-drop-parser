@@ -314,17 +314,6 @@ def get_drop_count(image):
         return -1
 
 
-def get_bounding_rectangle_for_all_contours(contours):
-    min_x = min_y = sys.maxsize
-    max_x = max_y = 0
-    for cnt in contours:
-        x, y, w, h = cv2.boundingRect(cnt)
-        min_x, max_x = min(x, min_x), max(x + w, max_x)
-        min_y, max_y = min(y, min_y), max(y + h, max_y)
-
-    return (min_x, min_y, max_x - min_x, max_y - min_y)
-
-
 def find_drop_window_edges(rgb_image):
     # https://github.com/fgophi/fgosccnt/blob/master/fgosccnt.py ScreenShot.extract_game_screen()
     gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
