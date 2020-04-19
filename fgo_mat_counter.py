@@ -253,7 +253,8 @@ def extract_text_from_image(image, file_name="pytesseract_input.png"):
         cv2.imwrite(file_name, qp_image)
 
     return pytesseract.image_to_string(
-        qp_image, config="-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=,0123456789"
+        qp_image,
+        config="-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=+,0123456789",
     )
 
 
@@ -368,16 +369,6 @@ def find_drop_window_edges(rgb_image):
 
 
 def extract_game_screen(image):
-    # Step 1: Attempt to find the left and right sides of the drop window.
-    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    game_screen_x, right_edge = find_side_edges(image)
-    game_screen_width = right_edge - game_screen_x
-
-    # Step 2: Calculate expected height of game screen based on the expected aspect ratio.
-    expected_game_screen_aspect_ratio = 1.5277777778
-    expected_game_screen_height = int(
-        round(game_screen_width / expected_game_screen_aspect_ratio, 0)
-    )
     image_height, image_width, _ = image.shape
     drop_left, drop_right, drop_top, drop_bottom = find_drop_window_edges(image)
     drop_height = drop_bottom - drop_top
