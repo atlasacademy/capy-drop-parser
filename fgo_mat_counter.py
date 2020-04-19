@@ -352,7 +352,7 @@ def find_drop_window_edges(rgb_image):
     ].min()
     drop_screen_aspect_ratio = (right_x - left_x) / (bottom_y - upper_y)
     expected_drop_screen_ar = 2.64
-    if abs(expected_drop_screen_ar - drop_screen_aspect_ratio) < 0.02:
+    if abs(expected_drop_screen_ar - drop_screen_aspect_ratio) > 0.02:
         logging.warning("Unexpected drop screen aspect ratio returned by HoughLinesP")
     return left_x, right_x, upper_y, bottom_y
 
