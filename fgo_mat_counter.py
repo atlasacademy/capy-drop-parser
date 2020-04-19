@@ -8,11 +8,9 @@
 import argparse
 import json
 import logging
-import os
-import pathlib
 import re
-import sys
 import time
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -29,7 +27,7 @@ THRESHOLD = 0.82
 CHAR_THRESHOLD = 0.65
 CHAR_THRESHOLD_LOOSE = 0.59
 
-REFFOLDER = pathlib.Path(__file__).parent / "ref"
+REFFOLDER = Path(__file__).parent / "ref"
 
 OFFSET_HEIGHT = 75
 OFFSET_WIDTH = 13
@@ -286,9 +284,7 @@ def get_scroll_bar_start_height(image):
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         cv2.imwrite("scroll_bar_binary.png", binary)
     _, template = cv2.threshold(
-        cv2.imread(
-            os.path.join(REFFOLDER, "scroll_bar_upper.png"), cv2.IMREAD_GRAYSCALE
-        ),
+        cv2.imread(str(REFFOLDER / "scroll_bar_upper.png"), cv2.IMREAD_GRAYSCALE),
         225,
         255,
         cv2.THRESH_BINARY,
@@ -376,7 +372,7 @@ def extract_game_screen(image):
 
 
 def analyze_image(image_path, templates):
-    if not os.path.isfile(image_path):
+    if not image_path.is_file():
         raise Exception(f"{image_path} does not exist")
 
     targetImg = cv2.imread(str(image_path), cv2.IMREAD_COLOR)
@@ -430,10 +426,10 @@ def analyze_image(image_path, templates):
 
 
 def load_image(image_path):
-    if not os.path.isfile(image_path):
+    if not image_path.is_file():
         raise Exception(f"Path is not a file: {image_path}")
 
-    image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+    image = cv2.imread(str(image_path), cv2.IMREAD_COLOR)
     if image is None:
         raise Exception(f"Failed to load file as image: {image_path}")
 
@@ -442,15 +438,14 @@ def load_image(image_path):
 
 def load_template_images(settings, template_dir):
     for template in settings:
-        template["image"] = load_image(os.path.join(template_dir, template["id"]))
-
+        template["image"] = load_image(template_dir / template["id"])
     return settings
 
 
 def analyze_image_for_discord(image_path, settings, template_dir):
     try:
         settings = load_template_images(settings, template_dir)
-        with open(os.path.join(REFFOLDER, "characters.json")) as fp:
+        with open(REFFOLDER / "characters.json") as fp:
             characters = json.load(fp)
             characters = load_template_images(characters, REFFOLDER)
             settings.extend(characters)
@@ -485,12 +480,12 @@ def run(image, debug=False, verbose=False):
     stream_handle.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
     logging.getLogger().addHandler(stream_handle)
 
-    base_settings = os.path.join(REFFOLDER, "settings.json")
-    base_img_dir_image = os.path.dirname(image)
-    custom_settings = os.path.join(base_img_dir_image, "settings.json")
-    custom_ref = os.path.join(base_img_dir_image, "files")
+    image_path = Path(image)
+    base_settings = REFFOLDER / "settings.json"
+    custom_settings = image_path.parent / "settings.json"
+    custom_ref = image_path.parent / "files"
 
-    if os.path.exists(custom_settings):
+    if custom_settings.exists():
         chosen_setting, chosen_ref = custom_settings, custom_ref
     else:
         chosen_setting, chosen_ref = base_settings, REFFOLDER
@@ -499,12 +494,12 @@ def run(image, debug=False, verbose=False):
         settings = json.load(fp)
     settings = load_template_images(settings, chosen_ref)
 
-    with open(os.path.join(REFFOLDER, "characters.json")) as fp:
+    with open(REFFOLDER / "characters.json") as fp:
         characters = json.load(fp)
         characters = load_template_images(characters, REFFOLDER)
         settings.extend(characters)
 
-    results = analyze_image(image, settings)
+    results = analyze_image(image_path, settings)
     end = time.time()
     duration = end - start
     logging.info(f"Completed in {duration:.2f} seconds.")

@@ -4,12 +4,11 @@ import json
 import logging
 import multiprocessing
 import operator
-import os
-import pathlib
 import shutil
 import signal
 import sys
 import time
+from pathlib import Path
 
 import cv2
 
@@ -17,7 +16,7 @@ import fgo_mat_counter
 
 
 TERMINATE = False
-SCRIPT_BASE_PATH = pathlib.Path(sys.argv[0]).parent
+SCRIPT_BASE_PATH = Path(sys.argv[0]).parent
 
 
 def signal_handling(*_):
@@ -45,17 +44,12 @@ def get_node_directories():
 def check_dirs_for_new_images(dir_list):
     work_items = []
     for folder in dir_list:
-        for f in pathlib.Path(folder).iterdir():
+        for f in folder.iterdir():
             if f.is_file() and cv2.imread(str(f)) is not None:
                 new_path = SCRIPT_BASE_PATH / "output" / f.parts[-2] / f.name
-                if not os.path.exists(new_path.parent):
-                    try:
-                        os.makedirs(new_path.parent)
-                    except OSError as e:
-                        if e.errno != errno.EEXIST:
-                            raise
+                new_path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(f, new_path)
-                os.remove(str(f))
+                f.unlink()
                 work_items.append(new_path)
 
     return work_items
@@ -77,7 +71,7 @@ def convert_score_to_float_for_json(drops):
 
 
 def create_result_json_file(result):
-    image_path = pathlib.Path(result["image_path"])
+    image_path = Path(result["image_path"])
     json_file_path = image_path.parent / (image_path.stem + ".json")
     with open(json_file_path, "w") as f:
         json.dump(result, f, indent=4)
