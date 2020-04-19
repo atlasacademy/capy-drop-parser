@@ -337,7 +337,7 @@ def find_drop_window_edges(rgb_image):
 
     left_x = lines[(lines[:, 0] == lines[:, 2]) & (lines[:, 0] < width / 2), 0].max()
     upper_y = lines[(lines[:, 1] == lines[:, 3]) & (lines[:, 1] < height / 2), 1].max()
-    bottom_y = lines[(lines[:, 1] == lines[:, 3]) & (lines[:, 1] > height / 2), 1].min()
+    # bottom_y = lines[(lines[:, 1] == lines[:, 3]) & (lines[:, 1] > height / 2), 1].min()
     # Detect Right line
     # Avoid catching the line of the scroll bar
     right_x = lines[
@@ -346,19 +346,16 @@ def find_drop_window_edges(rgb_image):
         & ((lines[:, 1] < upper_y) | (lines[:, 3] < upper_y)),  # Under the upper_y
         0,
     ].min()
-    drop_screen_aspect_ratio = (right_x - left_x) / (bottom_y - upper_y)
-    expected_drop_screen_ar = 2.64
-    if abs(expected_drop_screen_ar - drop_screen_aspect_ratio) > 0.02:
-        logging.warning("Unexpected drop screen aspect ratio returned by HoughLinesP")
-    return left_x, right_x, upper_y, bottom_y
+    return left_x, right_x, upper_y
 
 
 def extract_game_screen(image):
     image_height, image_width, _ = image.shape
-    drop_left, drop_right, drop_top, drop_bottom = find_drop_window_edges(image)
-    drop_height = drop_bottom - drop_top
+    drop_left, drop_right, drop_top = find_drop_window_edges(image)
+    expected_drop_screen_ar = 2.64
+    drop_height = (drop_right - drop_left) / expected_drop_screen_ar
     # Magic numbers come from a iPad Pro 11 screenshot
-    game_top = max(0, int(drop_bottom - drop_height * (1075 / 853)))
+    game_top = max(0, int(drop_top - drop_height * (222 / 853)))
     game_bottom = min(image_height, int(drop_top + drop_height * (1243 / 853)))
     if game_top < 35:
         game_top = 0
