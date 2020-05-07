@@ -73,9 +73,9 @@ def get_overlapped_char_point(current_char, charPtList):
         max_merge_distance = 4
         if current_char["value"] == charPtList[point][0]:
             max_merge_distance = DIGIT_MIN_DISTANCE
-        current_row = current_char["point"][1]
+        # current_row = current_char["point"][1]
         current_column = current_char["point"][0]
-        point_row = point[1]
+        # point_row = point[1]
         point_column = point[0]
         if abs(point_column - current_column) < max_merge_distance:
             return point
@@ -113,7 +113,7 @@ def getCharactersFromImage(matWindow, templates, threshold):
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         for cpt in charPtList:
             cv2.rectangle(resultsImg, cpt, (cpt[0] + h, cpt[1] + w), (0, 0, 255), 1)
-        cv2.imwrite(f"current_character_window.png", resultsImg)
+        cv2.imwrite("current_character_window.png", resultsImg)
 
     # finished evaluating characters, construct number representation of mats
     charValPositionList = []
@@ -276,7 +276,7 @@ def get_qp(image):
 
 
 def get_scroll_bar_start_height(image):
-    height, width, _ = image.shape
+    width = image.shape[1]
     gray_image = cv2.cvtColor(
         image[90 : 90 + 330, width - 50 : width], cv2.COLOR_BGR2GRAY
     )
@@ -350,7 +350,7 @@ def find_drop_window_edges(rgb_image):
 
 
 def extract_game_screen(image):
-    image_height, image_width, _ = image.shape
+    image_height = image.shape[0]
     drop_left, drop_right, drop_top = find_drop_window_edges(image)
     expected_drop_screen_ar = 2.64
     drop_height = (drop_right - drop_left) / expected_drop_screen_ar
@@ -530,6 +530,6 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--image", help="Image to process")
     args = parser.parse_args()
 
-    results = run(args.image, args.debug, args.verbose)
+    parse_results = run(args.image, args.debug, args.verbose)
     if not (args.verbose or args.debug):
-        print(results)
+        print(parse_results)
