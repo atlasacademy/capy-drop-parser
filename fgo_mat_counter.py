@@ -23,7 +23,7 @@ TRAINING_IMG_ASPECT_RATIO = float(TRAINING_IMG_WIDTH) / TRAINING_IMG_HEIGHT
 TRAINING_IMG_MAT_SCALE = 0.54
 MIN_DISTANCE = 50
 DIGIT_MIN_DISTANCE = 9
-THRESHOLD = 0.82
+THRESHOLD = 0.7
 CHAR_THRESHOLD = 0.65
 CHAR_THRESHOLD_LOOSE = 0.59
 
@@ -49,6 +49,8 @@ def getOverlap(pt, ptList, distance=MIN_DISTANCE):
 def countMat(targetImg, template, ptList):
     res = cv2.matchTemplate(targetImg, template["image"], cv2.TM_CCOEFF_NORMED)
     loc = np.asarray(res >= THRESHOLD).nonzero()
+    if "_Code_" in template["id"]:
+        loc = np.asarray(res >= 0.5).nonzero()
 
     # Reverse rows and columns of the matrix so that coordinates are relative to (0,0) [column, row] being the upper left of the image
     # instead of the traditional indexing of a multidimensional array [row, column].
@@ -197,9 +199,9 @@ def get_stack_sizes(image, mat_drops, templates):
 
 def countMats(mat_drops_window, templates):
     # Crop image to just include the mat window
-    mat_drops_window = mat_drops_window[80 : 80 + 400, 0:980]
-    if logging.getLogger().isEnabledFor(logging.DEBUG):
-        cv2.imwrite("just_mats.png", mat_drops_window)
+    # mat_drops_window = mat_drops_window[80 : 80 + 400, 0:980]
+    # if logging.getLogger().isEnabledFor(logging.DEBUG):
+    #     cv2.imwrite("just_mats.png", mat_drops_window)
 
     # search and mark target img for mat templates
     ptList = {}
@@ -226,7 +228,7 @@ def countMats(mat_drops_window, templates):
     # Detecting stack size is called here because cropping to just the stack size text based on the mat location needs
     # needs to be done with the cropped version of the image the mats were detected in for the location to remain
     # accurate.
-    get_stack_sizes(mat_drops_window, drops, templates)
+    # get_stack_sizes(mat_drops_window, drops, templates)
 
     return drops
 
@@ -244,35 +246,38 @@ def get_qp_from_text(text):
 
 
 def extract_text_from_image(image, file_name="pytesseract_input.png"):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, qp_image = cv2.threshold(gray, 65, 255, cv2.THRESH_BINARY_INV)
+    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    sensitivity = 120
+    lower_color = (255 - sensitivity, 255 - sensitivity, 255 - sensitivity)
+    upper_color = (255, 255, 255)
+    thres = cv2.inRange(image, lower_color, upper_color)
+    thres = cv2.bitwise_not(thres)
+    # _, qp_image = cv2.threshold(gray, 70, 255, cv2.THRESH_BINARY_INV)
 
     if logging.getLogger().isEnabledFor(logging.DEBUG):
-        cv2.imwrite(file_name, qp_image)
+        cv2.imwrite(file_name, thres)
 
     return pytesseract.image_to_string(
-        qp_image,
+        thres,
         config="-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=+,0123456789",
     )
 
 
 def get_qp(image):
-    qp_gained_text = extract_text_from_image(
-        image[435 : 435 + 38, 230 : 230 + 300], "qp_gained_text.png"
-    )
-    logging.info(f"QP gained text: {qp_gained_text}")
-    qp_total_text = extract_text_from_image(
-        image[481 : 481 + 38, 145 : 145 + 282], "qp_total_text.png"
-    )
+    # qp_gained_text = extract_text_from_image(
+    #     image[435 : 435 + 38, 230 : 230 + 300], "qp_gained_text.png"
+    # )
+    # logging.info(f"QP gained text: {qp_gained_text}")
+    qp_total_text = extract_text_from_image(image[26:45, 570:684], "qp_total_text.png")
     logging.info(f"QP total text: {qp_total_text}")
-    qp_gained = get_qp_from_text(qp_gained_text)
+    # qp_gained = get_qp_from_text(qp_gained_text)
     qp_total = get_qp_from_text(qp_total_text)
 
     if qp_total == 0:
         logging.error("Failed to extract QP total from text returned by tesseract")
         qp_total = -1
 
-    return qp_gained, qp_total
+    return qp_total
 
 
 def get_scroll_bar_start_height(image):
@@ -376,7 +381,8 @@ def analyze_image(image_path, templates):
     if targetImg is None:
         raise Exception(f"{image_path} returned None from imread")
 
-    game_screen = extract_game_screen(targetImg)
+    # game_screen = extract_game_screen(targetImg)
+    game_screen = targetImg
     height, width, _ = game_screen.shape
     wscale = (1.0 * width) / TRAINING_IMG_WIDTH
     hscale = (1.0 * height) / TRAINING_IMG_HEIGHT
@@ -409,14 +415,14 @@ def analyze_image(image_path, templates):
         cv2.imwrite("resized.png", game_screen)
 
     mat_drops = countMats(game_screen, templates)
-    qp_gained, qp_total = get_qp(game_screen)
-    scroll_position = get_scroll_bar_start_height(game_screen)
-    drop_count = get_drop_count(game_screen)
+    qp_total = get_qp(game_screen)
+    # scroll_position = get_scroll_bar_start_height(game_screen)
+    # drop_count = get_drop_count(game_screen)
     return {
-        "qp_gained": qp_gained,
+        # "qp_gained": qp_gained,
         "qp_total": qp_total,
-        "scroll_position": scroll_position,
-        "drop_count": drop_count,
+        # "scroll_position": scroll_position,
+        "drop_count": 10,
         "drops_found": len(mat_drops),
         "drops": mat_drops,
     }
@@ -439,19 +445,19 @@ def load_template_images(settings, template_dir):
     return settings
 
 
-def analyze_image_for_discord(image_path, settings, template_dir):
+def analyze_image_for_discord(image_path, settings, http_folder):
     try:
-        settings = load_template_images(settings, template_dir)
-        with open(REFFOLDER / "characters.json") as fp:
-            characters = json.load(fp)
-            characters = load_template_images(characters, REFFOLDER)
-            settings.extend(characters)
+        # settings = load_template_images(setting_data, template_dir)
+        # with open(REFFOLDER / "characters.json") as fp:
+        #     characters = json.load(fp)
+        #     characters = load_template_images(characters, REFFOLDER)
+        #     settings.extend(characters)
         result = analyze_image(image_path, settings)
         result["matched"] = True
     except Exception as e:
         result = {"matched": False, "exception": e}
 
-    result["image_path"] = str(image_path)
+    result["image_path"] = http_folder + image_path.name
     return result
 
 
@@ -487,7 +493,7 @@ def run(image, debug=False, verbose=False):
     else:
         chosen_setting, chosen_ref = base_settings, REFFOLDER
 
-    with open(chosen_setting) as fp:
+    with open(chosen_setting, "r", encoding="utf-8") as fp:
         settings = json.load(fp)
     settings = load_template_images(settings, chosen_ref)
 
@@ -500,6 +506,7 @@ def run(image, debug=False, verbose=False):
     end = time.time()
     duration = end - start
     logging.info(f"Completed in {duration:.2f} seconds.")
+    logging.info(f"Found {len(results['drops'])} drops")
     logging.info(f"{results}")
     return results
 
