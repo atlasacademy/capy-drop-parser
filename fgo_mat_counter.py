@@ -457,7 +457,7 @@ def analyze_image_for_discord(image_path, settings, http_folder):
     except Exception as e:
         result = {"matched": False, "exception": e}
 
-    result["image_path"] = http_folder + image_path.name
+    result["image_path"] = (http_folder + image_path.name).replace(" ", "%20")
     return result
 
 
