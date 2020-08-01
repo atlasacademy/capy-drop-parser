@@ -35,7 +35,7 @@ def analyze_image(image, settings, output_folder, http_folder):
         json.dump(result, fp, indent=2, ensure_ascii=False)
 
     shutil.copy2(image, output_folder / "image")
-    # image.unlink()
+    image.unlink()
 
 
 def main(input_f, output, http_folder):
@@ -47,11 +47,12 @@ def main(input_f, output, http_folder):
         setting_file = json.load(fp)
     template_dir = input_folder / "files"
     settings = fgo_mat_counter.load_template_images(setting_file, template_dir)
-    for image in input_folder.glob("*.png"):
-        print(image.name)
-        analyze_image(image, settings, output_folder, http_folder)
-        # with concurrent.futures.ProcessPoolExecutor() as executor:
-        #     executor.submit(analyze_image, image, settings, output_folder, http_folder)
+    for image in input_folder.iterdir():
+        if image.name.endswith(".png"):
+            print(image.name)
+            analyze_image(image, settings, output_folder, http_folder)
+            # with concurrent.futures.ProcessPoolExecutor() as executor:
+            #     executor.submit(analyze_image, image, settings, output_folder, http_folder)
 
 
 if __name__ == "__main__":
